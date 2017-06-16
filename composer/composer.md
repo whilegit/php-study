@@ -17,3 +17,7 @@ Composer 基础
 ## 4. 搜索composer search
 * 搜索packagist.org上的包,可以简单地输入搜索条件,如 composer search monolog
 * 加上参数--only-name或-N 时,搜索时须完全匹配.
+## 5. 增加依赖composer require
+* 增加新的依赖到composer.json中
+* 如: composer require monolog/monolog
+* 也可以直接指定依赖包 composer require monolog/monolog:2.*
