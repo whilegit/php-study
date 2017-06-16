@@ -1,6 +1,6 @@
 Composer 基础
 =============
-> Composer是php社区的包管理工具,[官网](http://composer.org),[国内镜像](http://www.phpcomposer.com)
+> Composer是php社区的包管理工具,[packagist.org](http://composer.org), [国内镜像](http://www.phpcomposer.com)
 # 一. 命令
 ## 1. 版本显示 composer -V
 > Window平台直接安装.exe文件,Linux平台直接yum search composer,安装完后用本命令测试是否成功.
