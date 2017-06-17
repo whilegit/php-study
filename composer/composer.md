@@ -50,10 +50,10 @@ Composer 基础(PHP的作曲家)
 
 ## 1. 给当前project命名
 * Every project is a package. 每个工程都是库.在composer.json里,加上
-    
+
     "name":"lzr/hello-world"
     "version":"1.0.0"
-    
+
 * 即可使当前工程变成一个Library, 上传后即可被其他开发者依赖.
 * 如果没有手动指定version,且工程使用了版本控制工具(VCS),composer将自动推断版本号
 
