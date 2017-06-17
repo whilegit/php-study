@@ -33,7 +33,7 @@ Composer 基础(PHP的作曲家)
 * 也可以直接指定依赖包 composer require monolog/monolog:2.*
 
 # 二. 配置文件 composer.json和composer.lock
-* composer.json文件
+> composer.json文件
 
     {
         "name": "lzr/hello-world",
@@ -49,7 +49,7 @@ Composer 基础(PHP的作曲家)
     }
 
 ## 1. 给当前project命名
-* Every project is a package. 每个工程都是库.在composer.json里,加上
+> Every project is a package. 每个工程都是库.在composer.json里,加上
 
     "name":"lzr/hello-world"
     "version":"1.0.0"
@@ -60,7 +60,7 @@ Composer 基础(PHP的作曲家)
 ## 2. 指定repositories源
 * composer支持从git/svn等版本库中安装依赖(该版本库中必须包含composer.json文件).
 * 在composer.json文件的repositories节点中增加源
-
+>
     {
        "type": "vcs",
        "url": "https://github.com/Seldaek/monolog"
@@ -73,7 +73,7 @@ Composer 基础(PHP的作曲家)
 # 三. 自动加载
 > composer安装完成后,在vendor目录下自动生成一个autoload.php文件,只要require该文件后
 > 即可使用composer安装的所有库.
-*　代码:　
+> 代码:　
 
     require __DIR__ . '/vendor/autoload.php';
     $log = new Monolog\Logger('name'); 
