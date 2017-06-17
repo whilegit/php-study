@@ -34,33 +34,34 @@ Composer 基础(PHP的作曲家)
 
 # 二. 配置文件 composer.json和composer.lock
 > composer.json文件
->{
->   "name": "lzr/hello-world",
->   "repositories": [
->       {
->           "type":"vcs",
->           "url": "https://github.com/NAME/PACKAGE"
->       }
->   ],
->   "require":{
->      "monolog/monolog": "1.2.*"
->   }
->}
+
+    {
+        "name": "lzr/hello-world",
+        "repositories": [
+            {
+                "type":"vcs",
+                "url": "https://github.com/NAME/PACKAGE"
+            }
+        ],
+        "require":{
+            "monolog/monolog": "1.2.*"
+        }
+    }
 
 ## 1. 给当前project命名
 > Every project is a package. 每个工程都是库.在composer.json里,加上
->   "name":"lzr/hello-world"
->   "version":"1.0.0"
+    "name":"lzr/hello-world"
+    "version":"1.0.0"
 > 即可使当前工程变成一个Library, 上传后即可被其他开发者依赖.
 > 如果没有手动指定version,且工程使用了版本控制工具(VCS),composer将自动推断版本号
 
 ## 2. 指定repositories源
 * composer支持从git/svn等版本库中安装依赖(该版本库中必须包含composer.json文件).
 > 在composer.json文件的repositories节点中增加源
-> {
->   "type": "vcs",
->   "url": "https://github.com/Seldaek/monolog"
-> }
+    {
+       "type": "vcs",
+       "url": "https://github.com/Seldaek/monolog"
+    }
 
 ## 3. 发布到packagist.org上
 > 在packagist.org上填到vcs版本库的地址,提交即可,然后packagist会爬取版本库的内容.
@@ -70,8 +71,8 @@ Composer 基础(PHP的作曲家)
 > composer安装完成后,在vendor目录下自动生成一个autoload.php文件,只要require该文件后
 > 即可使用composer安装的所有库.
 >　代码:　
->       require __DIR__ . '/vendor/autoload.php';
->       $log = new Monolog\Logger('name'); 
+    require __DIR__ . '/vendor/autoload.php';
+    $log = new Monolog\Logger('name'); 
 
 
 
