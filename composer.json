@@ -1,5 +1,10 @@
 {
 	"name": "whilegit/utils",
+	"autoload": {
+    	"psr-4": {
+      		"Utils\\": "src/Utils"
+		}
+  	},
     "require": {
         "monolog/monolog": "^1.22"
     }
