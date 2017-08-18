@@ -1,5 +1,6 @@
 {
 	"name": "linzhongren/phpmodule",
+	"version":"1.0.0",
     "require": {
         "monolog/monolog": "^1.22"
     }
