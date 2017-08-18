@@ -1,4 +1,5 @@
 {
+	"name": "linzhongren/phpmodule",
     "require": {
         "monolog/monolog": "^1.22"
     }
