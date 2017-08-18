@@ -1,5 +1,5 @@
 {
-	"name": "linzhongren/phpmodule",
+	"name": "whilegit/utils",
 	"version":"1.0.0",
     "require": {
         "monolog/monolog": "^1.22"
