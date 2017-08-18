@@ -1,6 +1,5 @@
 {
 	"name": "whilegit/utils",
-	"version":"1.0.1",
     "require": {
         "monolog/monolog": "^1.22"
     }
