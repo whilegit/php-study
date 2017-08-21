@@ -320,14 +320,12 @@ class Misc{
 	 *       defined('COMPOSER_VENDOR_DIR') or define('COMPOSER_VENDOR_DIR', __DIR__);<br/>
 	 */
 	public static function composer_addPsr4($prefix, $path, $subvendor = true){
-		if(!defined('COMPOSER_VENDOR_DIR')){
-			Trace::out(array("请在vendor目录下的autoload.*文件中增加如下内容", "defined('COMPOSER_VENDOR_DIR') or define('COMPOSER_VENDOR_DIR', __DIR__);"));
-		}
+		$WHILEGIT_UTILS_COMPOSER_VENDOR_DIR = __DIR__.'/../../vendor/';
 		static $composer_autoloader = null;
 		if($composer_autoloader == null) {
-			$composer_autoloader = require(COMPOSER_VENDOR_DIR.'/autoload.php');
+			$composer_autoloader = require("$WHILEGIT_UTILS_COMPOSER_VENDOR_DIR/autoload.php");
 		}
 		
-		$composer_autoloader->addPsr4($prefix, $subvendor ? COMPOSER_VENDOR_DIR ."/$path" : $path);
+		$composer_autoloader->addPsr4($prefix, $subvendor ? $WHILEGIT_UTILS_COMPOSER_VENDOR_DIR ."/$path" : $path);
 	}
 }
