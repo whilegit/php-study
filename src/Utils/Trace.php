@@ -5,7 +5,11 @@ use Monolog\Handler\StreamHandler;
 define('WHILEGIT_UTILS_TRACE_ROOT_PATH', str_ireplace('\\', '/', getcwd()));
 
 class Trace{
-	public static $monolog = null;
+	/**
+	 * 使用log功能时，必须先设用Trace::monolog()设置本静态变量
+	 * @var unknown
+	 */
+	public static $monologInstance = null;
 	
 	/**
 	 * 直接输出，并立即输出
@@ -14,7 +18,7 @@ class Trace{
 	 */
 	public static function out($val=null, $level = PHP_INT_MAX){
 		$GLOBALS['trace_marker_level'] = $level;
-		include (dirname(dirname(__DIR__ )) . '/static/utils_trace.phtml');
+		include (__DIR__  . '/../../static/utils_trace.phtml');
 		exit;
 	}
 	
@@ -119,12 +123,7 @@ class Trace{
 	 * @param Logger|string|null $monolog 如为null则使用静态monolog;如为string则当作文件名; 为Logger时则直接使用它
 	 */
 	public static function log($val = null, $monolog = null){
-		if($monolog == null){
-			$monolog = self::monolog();
-		} else if(is_string($monolog)){
-			$path = $monolog;
-			$monolog = self::monolog($path);
-		}
+		$monolog = self::monolog($monolog);
 		if(! $monolog instanceof Logger) return;
 		
 		$stack = debug_backtrace();
@@ -144,12 +143,8 @@ class Trace{
 	 * @param Logger|string|null $monolog 如为null则使用静态monolog;如为string则当作文件名; 为Logger时则直接使用它
 	 */
 	public static function log_stacks($val = null, $monolog = null){
-		if($monolog == null){
-			$monolog = self::monolog();
-		} else if(is_string($monolog)){
-			$path = $monolog;
-			$monolog = self::monolog($path);
-		}
+
+		$monolog = self::monolog($monolog);
 		if(! $monolog instanceof Logger) return;
 		
 		$stack = debug_backtrace();
@@ -175,7 +170,7 @@ class Trace{
 	 */
 	public static function monolog($monolog = null, $level = Logger::DEBUG){
 		if($monolog instanceof Logger){
-			self::$monolog = $monolog;
+			self::$monologInstance = $monolog;
 		}else if(is_string($monolog)){
 			$path = $monolog;
 			if(!file_exists(dirname($path)))	{
@@ -189,13 +184,12 @@ class Trace{
 			
 			$monolog = new Logger('Trace');
 			$monolog->pushHandler(new StreamHandler($path, $level ));
-			if(self::$monolog == null ){
-				self::$monolog = $monolog;
-			}else{
-				return $monolog;
+			if(self::$monologInstance == null ){
+				self::$monologInstance = $monolog;
 			}
+			return $monolog;
 		}else if($monolog == null){
-			return self::$monolog;
+			return self::$monologInstance;
 		}
 	}
 }

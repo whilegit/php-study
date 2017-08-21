@@ -54,4 +54,27 @@ class IString{
 			return $noc;
 		}
 	}
+
+
+	/**
+	 * [递归]将字符串的反斜杠去掉
+	 * @param string|array $value
+	 * @example   string\'a\"\\\'  =>   string'a"\'
+	 */
+	public static function stripslashes_deep($value){
+		return is_array($value) ? array_map('self::stripslashes_deep', $value) : stripslashes($value);
+	}
+	
+	
+	/**
+	 * [递归]将特殊的html字符转换成转义字符串(注：本函数不将&转义)
+	 * @param string|array $var
+	 * @example <div class="right">ba&la'ba"ba</div>   →   ＆lt;div class=＆quot;right＆quot;＆gt;bala＆baba＆lt;/div＆gt;
+	 * @desc <br>"→＆quot;  '→＆#039;   >→＆gt;   <→＆lt;   &→＆amp;(不转)
+	 */
+	public static function ihtmlspecialchars($var) {
+		return is_array($var) ? 
+				array_map('self::ihtmlspecialchars', $var) : 
+				str_replace('&amp;', '&', htmlspecialchars($var, ENT_QUOTES));
+	}
 }

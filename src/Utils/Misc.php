@@ -1,6 +1,6 @@
 <?php
 namespace Utils;
-
+defined('NOW_TIME') or define('NOW_TIME', time());
 class Misc{
 	
 	/**
@@ -185,5 +185,149 @@ class Misc{
 			$version2 = intval($version2);
 		}
 		return version_compare($version1, $version2);
+	}
+
+	
+	/**
+	 * 发送cookie | 返回cookie参数 | 设置cookie参数
+	 * @param null|array|string $config_or_key 如null则返回self::$COOKIE_CONFIG，如array则设置self::$COOKIE_CONFIG，如string则准备写cookie
+	 * @param string $value
+	 * @param number $expire     //过期秒数,如0则在浏览器关闭后清除
+	 * @param string $httponly   //为true时，此cookie对前端js不可见，仅用于http协议
+	 * @return array|boolean
+	 */
+	public static function cookie($config_or_key = null, $value, $expire = 0, $httponly = false){
+		static $COOKIE_CONFIG = array(
+				'pre' => '',    //key的前缀
+				'path' => '/',  //cookie路径
+				'domain' => ''  //域
+		);
+		if($config_or_key == null) {
+			//返回cookie参数
+			return $COOKIE_CONFIG;
+		} else if(is_array($config_or_key)) {
+			//设置cookie参数
+			foreach($config_or_key as $k=>$v){
+				$COOKIE_CONFIG[$k] = $v;
+			}
+			return $COOKIE_CONFIG;
+		} else {
+			//发送cookie
+			if(empty($COOKIE_CONFIG['domain'])){
+				$COOKIE_CONFIG['domain'] = ($_SERVER['HTTP_HOST'] != 'localhost') ? $_SERVER['HTTP_HOST'] : false;
+			}
+			$expire = $expire != 0 ? (NOW_TIME + $expire) : 0;
+			$secure = self::ishttps() ? 1 : 0;
+			return setcookie($COOKIE_CONFIG['pre'] . $key, $value, $expire,
+					$COOKIE_CONFIG['path'], $COOKIE_CONFIG['domain'], $secure, $httponly);
+		}
+	}
+	
+	/**
+	 * 获取本次请求的来源(如从外链进来，转成本站首页进来)
+	 * @param string $siteroot 本站的入口，如 http://localhost/
+	 * @return string
+	 */
+	public static function referer($siteroot = '') {
+		static $referer = ''; 
+		static $_siteroot = '';
+		if(!empty($siteroot)) $_siteroot = $siteroot;
+		if(!empty($referer)) return $referer;
+		if(empty($_SERVER['HTTP_REFERER']))  $_SERVER['HTTP_REFERER'] = '';
+		$referer = !empty($_REQUEST['referer']) ? $_REQUEST['referer'] : $_SERVER['HTTP_REFERER'];
+		$referer = rtrim($referer, '?');
+	
+		$referer = str_replace('&amp;', '&', $referer);
+		$reurl = parse_url($referer);
+	
+		//外站链进来时，referer设为本站的主页
+		if (!empty($reurl['host']) && 
+			!in_array($reurl['host'], array($_SERVER['HTTP_HOST'], 'www.' . $_SERVER['HTTP_HOST'])) && 
+			!in_array($_SERVER['HTTP_HOST'], array($reurl['host'], 'www.' . $reurl['host']))) {
+			$referer = $_siteroot;
+		} elseif (empty($reurl['host'])) {
+			$referer = $_siteroot . './' . $referer;
+		}
+		$referer = strip_tags($referer);
+		return $referer;
+	}
+	
+	/**
+	 * 是否是ajax请求
+	 * @return boolean
+	 */
+	public static function isajax(){
+		return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && 
+					 strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+	}
+	
+	/**
+	 * 是否是ssl连接
+	 * @return boolean
+	 */
+	public static function ishttps(){
+		return  $_SERVER['SERVER_PORT'] == 443 || (isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) != 'off') ? true : false;
+	}
+	
+	/**
+	 * 是否是post请求
+	 * @return boolean
+	 */
+	public static function ispost(){
+		return $_SERVER['REQUEST_METHOD'] == 'POST';
+	}
+	
+	
+	/**
+	 * 生成token或检验token，以防止表单重复提交(请用本函数前，请确保$_SESSION可以正常使用)
+	 * @param string|null $field 如为string时表示表单域，用于检验是否重复上传；null表示生成一个表单唯一码
+	 * @param string      $value 仅当$field为string时有意义，表示该表单域的值；如传空，默认从$_POST[$field]中取
+	 * @return string|true  当为了获取表单唯一码时返回string; 当检验时，返回boolean
+	 */
+	public static function token($field = null, $value = null ) {
+		if(empty($field)){
+			if(!empty($_SESSION['token'])) {
+				$count  = count($_SESSION['token']) - 5;   //最多维持5个token
+				asort($_SESSION['token']);                 //升序，最早的token失被unset
+				foreach($_SESSION['token'] as $k => $v) {
+					if(NOW_TIME - $v > 300 || $count > 0) {  //如果过时或过多则删除
+						unset($_SESSION['token'][$k]);
+						$count--;
+					}
+				}
+			}
+			$key = self::random(8);
+			$_SESSION['token'][$key] = NOW_TIME;
+			return $key;
+		} else {
+			if (empty($value) && empty($_POST[$field])) return false;
+			$value = !empty($value) ? $value : $_POST[$field];
+			if(self::isajax() && empty($_SESSION['token'][$value])) {  //表单唯一码错误
+				return false;  
+			} else {
+				unset($_SESSION['token'][$value]);
+				return true;
+			}
+		}
+	}
+	
+	/**
+	 * 增加composer的psr4命名空间
+	 * @param string $prefix   命名空间
+	 * @param string $path     vendor下的子目录或者其它目录(绝对路径或相对路径)
+	 * @param bool $subvendor  是否是vendor目录的子目录
+	 * @desc 调用本函数前先须要在vendor/autoload.php中增加下面一行，否则不能获取到Composer的自动加载器<br/>
+	 *       defined('COMPOSER_VENDOR_DIR') or define('COMPOSER_VENDOR_DIR', __DIR__);<br/>
+	 */
+	public static function composer_addPsr4($prefix, $path, $subvendor = true){
+		if(!defined('COMPOSER_VENDOR_DIR')){
+			Trace::out(array("请在vendor目录下的autoload.*文件中增加如下内容", "defined('COMPOSER_VENDOR_DIR') or define('COMPOSER_VENDOR_DIR', __DIR__);"));
+		}
+		static $composer_autoloader = null;
+		if($composer_autoloader == null) {
+			$composer_autoloader = require(COMPOSER_VENDOR_DIR.'/autoload.php');
+		}
+		
+		$composer_autoloader->addPsr4($prefix, $subvendor ? COMPOSER_VENDOR_DIR ."/$path" : $path);
 	}
 }

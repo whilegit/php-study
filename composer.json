@@ -8,5 +8,5 @@
     "require": {
         "monolog/monolog": "^1.22",
         "phpmailer/phpmailer": "~5.2"
-	}
+    }
 }
