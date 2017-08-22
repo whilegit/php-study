@@ -7,13 +7,13 @@ define('WHILEGIT_UTILS_TRACE_ROOT_PATH', str_ireplace('\\', '/', getcwd()));
 class Trace{
 	/**
 	 * 使用log功能时，必须先设用Trace::monolog()设置本静态变量
-	 * @var unknown
+	 * @var Monolog\Logger;
 	 */
 	public static $monologInstance = null;
 	
 	/**
 	 * 直接输出，并立即输出
-	 * @param unknown $val
+	 * @param mixed $val
 	 * @param string $level
 	 */
 	public static function out($val=null, $level = PHP_INT_MAX){
@@ -24,12 +24,12 @@ class Trace{
 	
 	/**
 	 * 获取callable的原型(包括参数及默认参数)
-	 * @param unknown $class 可以为空或者类名
-	 * @param unknown $type 可以为空或::或->
-	 * @param unknown $function 可以是函数名或方法名
+	 * @param string $class 可以为空或者类名
+	 * @param string $type 可以为空或::或->
+	 * @param string $function 可以是函数名或方法名
 	 * @return string|array
 	 */
-	public static function get_prototype($class, $type, $function){
+	public static function prototype($class, $type, $function){
 		$info = array('success'=>false, 'msg'=>'');
 		$callable = $class.$type.$function;
 		if(!empty($class)){
@@ -38,7 +38,7 @@ class Trace{
 				$doc = $mr->getDocComment();
 				$modifiers = implode(' ',\Reflection::getModifierNames($mr->getModifiers()));
 		
-				$params = self::get_reflect_params($mr);
+				$params = self::reflect_params($mr);
 				$info = $modifiers . ' ' . $function . ' ( '.$params.' )';
 			}catch(Exception $e){
 				$info = array('success'=>false, 'msg'=>$callable . '()方法不存在，请检查__call()魔术方法');
@@ -46,7 +46,7 @@ class Trace{
 		}else{
 			if(!in_array($function, array('require','require_once','include','include_once', 'eval', ''))){
 				$mf = new \ReflectionFunction($function);
-				$params = self::get_reflect_params($mf);
+				$params = self::reflect_params($mf);
 				$info = $function . ' ( '.$params.' )';
 			}
 		}
@@ -58,7 +58,7 @@ class Trace{
 	 * @param ReflectionFunctionAbstract $mr 实现类可能是ReflectionMethod或ReflectionFunction
 	 * @return string 返回参数表
 	 */
-	public static function get_reflect_params($mr){
+	public static function reflect_params($mr){
 		//获取反射参数 ReflectionParameter 类型的数组
 		$params = $mr->getParameters();
 		$params_str = array();

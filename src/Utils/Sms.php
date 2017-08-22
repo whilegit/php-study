@@ -19,11 +19,13 @@ class Sms{
 	 */
 	public static function init($accessKeyId, $accessKeySecret){
 		if(self::$acsClient == null){
+			//由于aliyuncs并未上传到cvs或packagist.org，这里只能手动加载命名空间。其项目暂存在vendor目录下
 			Misc::composer_addPsr4('Aliyun\Api\Sms\\', 'aliyuncs/sms/api_sdk/lib/Api/Sms');
 			Misc::composer_addPsr4('Aliyun\Api\Msg\\', 'aliyuncs/sms/msg_sdk/lib/Api/Msg');
 			Misc::composer_addPsr4('Aliyun\Core\\',    'aliyuncs/sms/api_sdk/lib/Core');
 			Misc::composer_addPsr4('Aliyun\MNS\\',     'aliyuncs/sms/msg_sdk/lib/MNS');
 			
+			//初始化
 			Config::load();
 			// 短信API产品名
 			$product = "Dysmsapi";

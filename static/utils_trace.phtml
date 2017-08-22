@@ -37,7 +37,7 @@
 			}
 		}
 		if(empty($function)) continue;
-		$info = self::get_prototype($class, $type, $function);
+		$info = self::prototype($class, $type, $function);
 		$args = implode(', ',$args);
 		$stack_html .= "<p> 
 		                    <span title='{$file_full}' style='color:gray;'>{$file}{$line}</span>

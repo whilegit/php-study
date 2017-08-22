@@ -36,6 +36,16 @@ class ComposerStaticInitac40a31d19e5e2d23c17bd07e38a6a17
         ),
     );
 
+    public static $prefixesPsr0 = array (
+        'P' => 
+        array (
+            'PHPExcel' => 
+            array (
+                0 => __DIR__ . '/..' . '/phpoffice/phpexcel/Classes',
+            ),
+        ),
+    );
+
     public static $classMap = array (
         'EasyPeasyICS' => __DIR__ . '/..' . '/phpmailer/phpmailer/extras/EasyPeasyICS.php',
         'PHPMailer' => __DIR__ . '/..' . '/phpmailer/phpmailer/class.phpmailer.php',
@@ -52,6 +62,7 @@ class ComposerStaticInitac40a31d19e5e2d23c17bd07e38a6a17
         return \Closure::bind(function () use ($loader) {
             $loader->prefixLengthsPsr4 = ComposerStaticInitac40a31d19e5e2d23c17bd07e38a6a17::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInitac40a31d19e5e2d23c17bd07e38a6a17::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInitac40a31d19e5e2d23c17bd07e38a6a17::$prefixesPsr0;
             $loader->classMap = ComposerStaticInitac40a31d19e5e2d23c17bd07e38a6a17::$classMap;
 
         }, null, ClassLoader::class);
