@@ -218,7 +218,7 @@ class Misc{
 			}
 			$expire = $expire != 0 ? (NOW_TIME + $expire) : 0;
 			$secure = self::ishttps() ? 1 : 0;
-			return setcookie($COOKIE_CONFIG['pre'] . $key, $value, $expire,
+			return setcookie($COOKIE_CONFIG['pre'] . $config_or_key, $value, $expire,
 					$COOKIE_CONFIG['path'], $COOKIE_CONFIG['domain'], $secure, $httponly);
 		}
 	}
