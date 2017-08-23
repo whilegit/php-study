@@ -77,4 +77,17 @@ class IString{
 				array_map('self::ihtmlspecialchars', $var) : 
 				str_replace('&amp;', '&', htmlspecialchars($var, ENT_QUOTES));
 	}
+
+
+	/**
+	 * 返回C风格的字符串，即$str[x]得到的是一个真正的整数(0~255)，而非一个单字符的string<br>
+	 * @desc 主要应用编码领域，参见pack和unpack系列函数，而bin2hex($string)则是返回十六进表示的字符串，而非一个整数。
+	 * @param String $str
+	 */
+	public static function chars($str){
+		if(empty($str)) return array();
+		$ary = unpack('C*', $str);
+		//和空数组合并，目的是返回一个以0为基准的数组
+		return array_merge(array(), $ary);
+	}
 }
