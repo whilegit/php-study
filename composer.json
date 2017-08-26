@@ -2,7 +2,8 @@
 	"name": "whilegit/utils",
 	"autoload": {
     	"psr-4": {
-      		"Utils\\": "src/Utils"
+      		"Utils\\": "src/Utils",
+      		"Datebase\\":"src/Dabebase"
 		}
   	},
     "require": {

@@ -9,4 +9,5 @@ return array(
     'Utils\\' => array($baseDir . '/src/Utils'),
     'Psr\\Log\\' => array($vendorDir . '/psr/log/Psr/Log'),
     'Monolog\\' => array($vendorDir . '/monolog/monolog/src/Monolog'),
+    'Datebase\\' => array($baseDir . '/src/Dabebase'),
 );

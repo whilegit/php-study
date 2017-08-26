@@ -32,6 +32,17 @@ Composer 基础(PHP的作曲家)
 * 如: composer require monolog/monolog
 * 也可以直接指定依赖包 composer require monolog/monolog:2.*
 
+## 6. 重新生成各种依赖关系 composer dump-autoload
+* 适用于自己创建库时，在composer.json中增加命名空间
+
+	 "autoload": {
+    	"psr-4": {                     //psr-4命名空间
+      		"Utils\\": "src/Utils",
+      		"Db\\": "src/Db"
+		}
+    }
+
+
 # 二. 配置文件 composer.json和composer.lock
 > composer.json文件
 
@@ -88,7 +99,11 @@ Composer 基础(PHP的作曲家)
     $log = new Monolog\Logger('name'); 
 
 
+# 四、手动加载
+> 手动加载psr-4空间
 
+    $autoloader = require ('vendor/autoload.php');   //可以保存起来
+    $autoloader->addPsr4('Top\Namespace\\', 'path/to/the/dir/that/holds/the/classfiles');
 
 
 
