@@ -1,10 +1,10 @@
 <?php
-namespace Utils;
+namespace Whilegit\Utils;
 use PHPExcel;
 use PHPExcel_IOFactory;
 use PHPExcel_Cell;
-use Utils\File;
-use Utils\Misc;
+use Whilegit\Utils\File;
+use Whilegit\Utils\Misc;
 class Excel{
 	
 	/**

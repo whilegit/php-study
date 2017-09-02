@@ -1,5 +1,5 @@
 <?php
-namespace Utils;
+namespace Template;
 
 class Template{
 	public function parse($source){

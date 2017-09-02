@@ -1,6 +1,6 @@
 <?php
-namespace Utils;
-use \PHPMailer as PHPMailer;
+namespace Whilegit\Utils;
+use PHPMailer;
 
 
 class Comm{
@@ -23,7 +23,7 @@ class Comm{
 			$urlset['port'] = $urlset['scheme'] == 'https' ? '443' : '80';
 		
 		//检查是否已加载openssl扩展
-		if (IString::strexists($url, 'https://') && !extension_loaded('openssl')) {
+		if (IString::exists($url, 'https://') && !extension_loaded('openssl')) {
 			return array('success'=>false, 'msg' =>'请开启您PHP环境的openssl');
 		}
 		
@@ -98,7 +98,7 @@ class Comm{
 			if (!empty($extra) && is_array($extra)) {
 				$headers = array();
 				foreach ($extra as $opt => $value) {
-					if (strexists($opt, 'CURLOPT_')) {
+					if (IString::exists($opt, 'CURLOPT_')) {
 						curl_setopt($ch, constant($opt), $value);
 					} elseif (is_numeric($opt)) {
 						curl_setopt($ch, $opt, $value);
@@ -131,7 +131,7 @@ class Comm{
 		$fdata .= "Connection: close\r\n";                                      //请求首部：指示服务器使用短链接
 		if (!empty($extra) && is_array($extra)) {                               //加载$extra参数中的各种请求首部
 			foreach ($extra as $opt => $value) {
-				if (!strexists($opt, 'CURLOPT_')) {
+				if (!IString::exists($opt, 'CURLOPT_')) {
 					$fdata .= "{$opt}: {$value}\r\n";
 				}
 			}

@@ -1,11 +1,11 @@
 <?php 
-use Utils\Misc;
-use Utils\Comm;
-use Utils\Trace;
-use Utils\IString;
-use Utils\Sms;
-use Utils\Excel;
-use Utils\Pinyin;
+use Whilegit\Utils\Misc;
+use Whilegit\Utils\Comm;
+use Whilegit\Utils\Trace;
+use Whilegit\Utils\IString;
+use Whilegit\Utils\Sms;
+use Whilegit\Utils\Excel;
+use Whilegit\Utils\Pinyin;
 
 require_once "vendor/autoload.php";
 

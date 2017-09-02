@@ -1,5 +1,5 @@
 <?php
-namespace Utils;
+namespace Whilegit\Utils;
 
 class Charset{
 

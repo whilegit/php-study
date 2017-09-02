@@ -7,9 +7,9 @@ namespace Composer\Autoload;
 class ComposerStaticInitac40a31d19e5e2d23c17bd07e38a6a17
 {
     public static $prefixLengthsPsr4 = array (
-        'U' => 
+        'W' => 
         array (
-            'Utils\\' => 6,
+            'Whilegit\\' => 9,
         ),
         'P' => 
         array (
@@ -19,16 +19,12 @@ class ComposerStaticInitac40a31d19e5e2d23c17bd07e38a6a17
         array (
             'Monolog\\' => 8,
         ),
-        'D' => 
-        array (
-            'Datebase\\' => 9,
-        ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'Utils\\' => 
+        'Whilegit\\' => 
         array (
-            0 => __DIR__ . '/../..' . '/src/Utils',
+            0 => __DIR__ . '/../..' . '/src',
         ),
         'Psr\\Log\\' => 
         array (
@@ -37,10 +33,6 @@ class ComposerStaticInitac40a31d19e5e2d23c17bd07e38a6a17
         'Monolog\\' => 
         array (
             0 => __DIR__ . '/..' . '/monolog/monolog/src/Monolog',
-        ),
-        'Datebase\\' => 
-        array (
-            0 => __DIR__ . '/../..' . '/src/Dabebase',
         ),
     );
 

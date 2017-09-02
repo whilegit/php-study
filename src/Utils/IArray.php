@@ -1,5 +1,5 @@
 <?php
-namespace Utils;
+namespace Whilegit\Utils;
 use SimpleXMLElement;
 
 class IArray{
@@ -56,5 +56,24 @@ class IArray{
 			$ary = json_decode(json_encode($obj), true);
 		}
 		return $ary;
+	}
+
+
+	/**
+	 * 对数组重新命名键名
+	 * @param array $raw
+	 * @param string $keyfield  键名
+	 * @return array
+	 */
+	public static function rekey(&$raw, $keyfield){
+		$rs = array();
+		foreach ($raw as $key => &$row) {
+			if (isset($row[$keyfield])) {
+				$rs[$row[$keyfield]] = $row;
+			} else {
+				$rs[] = $row;
+			}
+		}
+		return $rs;
 	}
 }

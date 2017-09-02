@@ -1,5 +1,5 @@
 <?php
-namespace Utils;
+namespace Whilegit\Utils;
 /**
  * 拼音类
  * @author Administrator

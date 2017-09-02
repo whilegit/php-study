@@ -1,5 +1,5 @@
 <?php
-namespace Utils;
+namespace Whilegit\Utils;
 
 class IString{
 	/**
@@ -8,7 +8,7 @@ class IString{
 	 * @param string $find
 	 * @return boolean
 	 */
-	public static function strexists($string, $find) {
+	public static function exists($string, $find) {
 		return !(strpos($string, $find) === FALSE);
 	}
 

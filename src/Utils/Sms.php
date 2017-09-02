@@ -1,5 +1,5 @@
 <?php
-namespace Utils;
+namespace Whilegit\Utils;
 
 use Aliyun\Core\Profile\DefaultProfile;
 use Aliyun\Core\DefaultAcsClient;

@@ -1,10 +1,77 @@
 <?php 
-use Utils\Excel;
-use Utils\Trace;
-use Db\IPdo;
-use Utils\IArray;
-use Utils\Charset;
+use Whilegit\Utils\Excel;
+use Whilegit\Utils\Trace;
+use Whilegit\Utils\IArray;
+use Whilegit\Utils\Charset;
+use Whilegit\Database\Basic\IPdo;
+use Whilegit\Database\Model;
+use Whilegit\Model\Virtual\AddonArticle;
+use Whilegit\Model\Virtual\Mtypes;
 require_once "vendor/autoload.php";
+
+Trace::monolog('m2.log');
+
+function init(){
+	$db_config  = array(
+		 'dbname' => 'dedecmsv57utf8sp2',
+		 'host' => '127.0.0.1',
+		 'port' => 3306,
+		 'username' => 'root',
+		 'password' => '317507Ok()lzr',
+		 'charset' => 'utf-8');
+	
+	IPdo::instance('master', $db_config);
+	IPdo::instance()->table(function($table){return "dede_{$table}";});
+	Model::model_init(IPdo::instance());
+}
+Trace::set_error_handler();
+Trace::set_exception_handler();
+init();
+
+//$sql = "Select * from `user` Where id=:id";
+//Trace::out(IPdo::instance()->update('user', array('email'=>'Lzrrrzzz'), array('id'=>"1")));
+//$e = IPdo::instance()->fetchall('Select `username`,`email` From `user` Where `username`=:username And `email`=:email', array('username'=>'lzrr', 'email'=>'6215715@qq.com'), 'username');
+//$e = IPdo::instance()->get('user', array('id'=>1));
+//$e = IPdo::instance()->allfields('addonarticle');
+//Trace::out($e);
+
+//Trace::out(IPdo::instance()->query($sql, array(':id'=>1)));
+/*
+PdoConnection::config($db_config, 'master');
+$pdo = PdoConnection::get();
+var_dump($pdo); exit;
+*/
+/*
+class AddonArticle extends Model{
+	protected static $table = '';
+	protected static $pk = '';             // 主键名称
+	protected static $fields = null;
+	protected static $redirect_map = array('typeid'=>'\Mtypes');
+}*/
+
+/*
+class Mtypes extends Model{
+	protected static $table = '';
+	protected static $pk = '';         // 主键名称
+	protected static $fields = null;
+	protected static $redirect_map = null;
+}
+*/
+AddonArticle::redirectMap('typeid','Mtypes');
+$model = AddonArticle::get(1); //
+//$model = new AddonArticle();
+$model->setAttr("typeid", 3);
+/*
+$model->setAttr("redirecturl", 'http://www.sina.com.cn/');
+$model->setAttr("templet", '0');
+$model->setAttr("userip", '127.0.0.1');
+$model->setAttr("body", 'bodybody');*/
+$model->save();
+//$model->pull();
+$typeid = $model->getAttr('typeid');
+$mtypes = $model->redirect('typeid');
+Trace::out($mtypes);
+
 
 $list = array(
 		array('a'=>1, 'b'=>2),
@@ -29,25 +96,9 @@ $params = array(
 
 //Excel::export($list, $params);
 //Trace::out($_FILES);
-$str = "
-<CB>u5341u65b9u521bu5ba2</CB>
-<BR>u540du79f0            u5355u4ef7  u6570u91cf u91d1u989d
-<BR>u6fb3u6d32u8fdbu53e3Broo155   1    155
-<BR>u89c4u683cuff1au4ec0u9526u65e9u9910u8c37u7269
-<BR>u6761u7801uff1a9326847000364
-<BR>u8ba2u5355u7f16u53f7:SH20170826125623624883
-<BR>bu8054u7cfbu4eba:u5415
-<BR>u8054u7cfbu7535u8bdd:15068633525
-<BR>u5730u5740:u6d59u6c5fu7701u53f0u5ddeu5e02u8defu6865u533a bu65e5u7528u54c1u5546u57ce
-<BR>u914du9001u65b9u5f0f:u5febu9012
-<BR>u5907u6ce8:
-<BR>u4e0bu5355u65f6u95f4:2017-08-26 12:56
-<BR>u4ed8u6b3eu65b9u5f0f:u672au652fu4ed8AA
-<BR>u8fd0u8d39:9
-<BR>u8ba2u5355u91d1u989d:163
-<BR>";
 
-$str = Charset::unicode2utf8(str_replace('u','\u',$str), true);
+
+$str = Charset::unicode2utf8('\uffe5', true);
 //unpack('C*', $str))
 Trace::out($str);
 

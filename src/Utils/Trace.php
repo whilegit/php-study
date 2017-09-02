@@ -1,5 +1,5 @@
 <?php
-namespace Utils;
+namespace Whilegit\Utils;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 define('WHILEGIT_UTILS_TRACE_ROOT_PATH', str_ireplace('\\', '/', getcwd()));
@@ -32,6 +32,7 @@ class Trace{
 	public static function prototype($class, $type, $function){
 		$info = array('success'=>false, 'msg'=>'');
 		$callable = $class.$type.$function;
+		//if("Utils\Trace::out" != $callable) {echo "$callable"; exit;}
 		if(!empty($class)){
 			try{
 				$mr = new \ReflectionMethod($class, $function);
@@ -115,6 +116,37 @@ class Trace{
 		$url = $_SERVER['SCRIPT_NAME'];
 		if(!empty($_SERVER['QUERY_STRING'])) $url .= '?' . $_SERVER['QUERY_STRING'];
 		return $url;
+	}
+	
+	public static function exception_handler($e){
+		$class = get_called_class();
+		call_user_func(array($class, "out"), $e);
+		die;
+	}
+	
+	public static function error_handler($errno , $errstr, $errfile, $errline){
+		$class = get_called_class();
+		$args = array('errno'=>$errno, 'errstr'=>$errstr, 'errfile'=>"$errfile: {$errline}L" );
+		call_user_func(array($class, "out"), $args);
+		die;
+	}
+	
+	public static function set_error_handler($handler = null, $level = E_ALL ){
+		$class = get_called_class();
+		if(!empty($handler)) {
+			set_error_handler ( $handler, $level );
+		} else {
+			set_error_handler ( array($class, "error_handler"), $level);
+		}
+	}
+	
+	public static function set_exception_handler($handler = null){
+		$class = get_called_class();
+		if(!empty($handler)) {
+			set_exception_handler ( $handler );
+		} else {
+			set_exception_handler (array($class, "exception_handler"));
+		}
 	}
 	
 	/**

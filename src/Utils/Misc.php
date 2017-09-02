@@ -1,5 +1,5 @@
 <?php
-namespace Utils;
+namespace Whilegit\Utils;
 defined('NOW_TIME') or define('NOW_TIME', time());
 class Misc{
 	
