@@ -1,6 +1,7 @@
 <?php
 namespace Whilegit\Database\Basic;
 use Whilegit\Utils\IString;
+use Whilegit\Utils\Trace;
 
 class PdoUtils{
 	
@@ -80,7 +81,7 @@ class PdoUtils{
 	 */
 	public static function replace_table($sql, $callback){
 		return  preg_replace_callback(
-					array('/(SELECT\s+[\.\*a-z0-9_,`]+\s+FROM\s+[`]?)([a-z][0-9a-z_]*)([`]?\s+)/i',
+					array('/(SELECT\s+[\.\*a-z0-9_,`\(\) ]+\s+FROM\s+[`]?)([a-z][0-9a-z_]*)([`]?\s+)/i',
 						  '/(UPDATE\s+[`]?)([a-z][0-9a-z_]*)([`]?\s+SET)/i',
 						  '/(INSERT\s+INTO\s+[`]?)([a-z][a-z0-9_]*)([`]?\s+[\(]|[`]?\s+[SET])/i',  //INSERT INTO tablename () Values ()和INSERT INTO tablename SET用法
 						  '/(REPLACE\s+INTO\s+[`]?)([a-z][a-z0-9_]*)([`]?\s+[\(]|[`]?\s+[SET])/i',
@@ -130,5 +131,45 @@ class PdoUtils{
 			}
 		}
 		return $select;
+	}
+
+	public static function params($params, $pk){
+		$ret = array();
+		if(empty($params)) return $ret;
+
+		if(is_string($params) || is_numeric($params)){
+			$params = "$params";
+			if(strpos($params, ',') !== false){
+				$sp = explode(',', $params);
+				$sp_err = array_filter($sp, function($v){
+					return !is_numeric(trim($v));
+				});
+				if(!empty($sp_err)){
+					throw new \PDOException("主键条件参数 {$params} 中有非数字");
+				}
+				$ret = array($pk => $sp);
+			} else {
+				$ret = array($pk => $params);
+			}
+		} else {
+			$numeric = false;
+			$string = false;
+			foreach($params as $k=>$v){
+				if(is_numeric($k)){
+					$numeric = true;
+				}else {
+					$string = true;
+				}
+			}
+			if($numeric == true && $string == true){
+				throw new \PDOException("条件参数 ". var_export($params, true) . " 中既有数字键值也有字符串键值");
+			}
+			if($string){
+				$ret = $params;
+			} else {
+				$ret = array($pk => $params);
+			}
+		}
+		return $ret;
 	}
 }

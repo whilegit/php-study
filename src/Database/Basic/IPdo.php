@@ -73,6 +73,7 @@ class IPdo{
 	 */
 	public function prepare($sql) { 
 		$sql = PdoUtils::replace_table($sql, $this->table_callback);
+		//if($sql != 'DESCRIBE jpress_user' || $sql != 'SELECT * FROM jpress_user   ') \Whilegit\Utils\Trace::out($sql);
 		$statement = $this->pdo->prepare($sql);
 		return $statement;
 	}
@@ -164,7 +165,7 @@ class IPdo{
 		$statement = $this->prepare($sql);
 		$result = $statement->execute($params);
 		if (!$result) {
-			return false;
+			throw new \PDOException(var_export($this->pdo->errorInfo(), true));
 		} else {
 			return $statement->fetchColumn($column);
 		}
@@ -243,6 +244,21 @@ class IPdo{
 		$limitsql = PdoUtils::limit($limit);
 		$sql = "SELECT {$select} FROM {$tablename} {$condition['fields']} {$orderbysql} {$limitsql}";
 		return $this->fetchall($sql, $condition['params'], $keyfield);
+	}
+	
+	public function getcount($tablename, $condition = array()){
+		$condition = PdoUtils::implode($condition, 'AND');
+		$condition['fields'] = !empty($condition['fields']) ? " WHERE {$condition['fields']}" : '';
+		$sql = "SELECT count(*)  FROM {$tablename} {$condition['fields']}";
+		//\WhileGit\Utils\Trace::out($sql);
+		return $this->fetchcolumn($sql, $condition['params']);
+	}
+	
+	public function getsum($tablename, $field, $condition = array()){
+		$condition = PdoUtils::implode($condition, 'AND');
+		$condition['fields'] = !empty($condition['fields']) ? " WHERE {$condition['fields']}" : '';
+		$sql = "SELECT sum({$field})  FROM {$tablename} {$condition['fields']}";
+		return $this->fetchcolumn($sql, $condition['params']);
 	}
 	
 	/**

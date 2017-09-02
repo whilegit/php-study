@@ -1,6 +1,7 @@
 <?php
 namespace Whilegit\Database;
 use Whilegit\Database\Basic\IPdo;
+use Whilegit\Database\Basic\Pdoutils;
 
 class Model implements \ArrayAccess{
 	protected static $iPdo = null;
@@ -101,10 +102,9 @@ class Model implements \ArrayAccess{
 	 * @param scale|array $pk 如为string或int, 则是主键条件；如为array，则是查询条件
 	 * @return Object|null
 	 */
-	public static function get($pk){
+	public static function get($params){
 		static::submodel_init();
-		//if($pk == 2) \Utils\Trace::out(static::$table);
-		$params = !is_array($pk) ? array(static::$pk=>$pk) : $pk;
+		$params = PdoUtils::params($params, static::$pk);
 		$data = self::$iPdo->get(static::$table, $params);
 		if(!empty($data)) {
 			$class = get_called_class();
@@ -113,6 +113,49 @@ class Model implements \ArrayAccess{
 		return null;
 	}
 	
+	/**
+	 * 罗列记录
+	 * @param array $params     条件
+	 * @param string $keyfield  数组的关键字
+	 * @return Array[subModel]
+	 */
+	public static function ls($params = array(), $fields = array(), $keyfield = ''){
+		static::submodel_init();
+		$params = PdoUtils::params($params, static::$pk);
+		$list = self::$iPdo->getall(static::$table, $params, $fields, $keyfield);
+		$ret = array();
+		foreach($list as $k=>&$v){
+			$ret[$k] = new static($v);
+		}
+		return $ret;
+	}
+	
+	/**
+	 * 记算总和
+	 * @param string $field  需要计算的字段
+	 * @param array $params  条件(如非数组，则当成主键条件)
+	 * @return number        
+	 * @example $list = Contract::ls(array('id >= '=>21), '*','contract_number');
+	 */
+	public static function sum($field, $params = array()){
+		static::submodel_init();
+		$params = PdoUtils::params($params, static::$pk);
+		$sum = self::$iPdo->getsum(static::$table, $field, $params);
+		return !empty($sum) ? floatval($sum) : 0.00;
+	}
+	
+	/**
+	 * 统计记录数量
+	 * @param array $params
+	 * @return number
+	 * @example $list = Contract::count(array('id >= '=>21));
+	 */
+	public static function count($params = array()){
+		static::submodel_init();
+		$params = PdoUtils::params($params, static::$pk);
+		$count = self::$iPdo->getcount(static::$table, $params);
+		return intval($count);
+	}
 	
 	/**
 	 * 保存或更新数据
