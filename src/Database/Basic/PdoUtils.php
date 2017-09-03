@@ -1,7 +1,6 @@
 <?php
 namespace Whilegit\Database\Basic;
 use Whilegit\Utils\IString;
-use Whilegit\Utils\Trace;
 
 class PdoUtils{
 	

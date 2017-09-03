@@ -7,7 +7,16 @@ use Whilegit\Database\Basic\IPdo;
 use Whilegit\Database\Model;
 use Whilegit\Model\Virtual\User;
 use Whilegit\Model\Virtual\Contract;
+use Whilegit\Utils\ImageCaptcha;
+use Whilegit\Utils\Misc;
 require_once "vendor/autoload.php";
+
+$captcha = Misc::random(6);
+/* 保存验证码 */
+$image_captchar = new ImageCaptcha($captcha);
+$image_captchar->output();
+exit;
+
 
 Trace::monolog('m2.log');
 

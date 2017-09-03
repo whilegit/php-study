@@ -9,7 +9,6 @@ use Whilegit\Utils\Pinyin;
 
 require_once "vendor/autoload.php";
 
-
 $list = array(
 		array('a'=>1, 'b'=>2),
 		array('a'=>3, 'b'=>4),
