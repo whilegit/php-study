@@ -171,9 +171,14 @@ class Comm{
 	/**
 	 * http连接(get)
 	 * @param string $url
+	 * @param array  $data 参数，最终拼写进$url中
 	 * @return 同request的返回值
 	 */
-	public static function get($url) {
+	public static function get($url, $data = array()) {
+		if(!empty($data)){
+			$url .= (strpos($url, '?') !== false) ? '&' : '?';
+			$url .= http_build_query($data);
+		}
 		return self::request($url);
 	}
 	
