@@ -7,16 +7,25 @@ use Whilegit\Database\Basic\IPdo;
 use Whilegit\Database\Model;
 use Whilegit\Model\Virtual\User;
 use Whilegit\Model\Virtual\Contract;
-use Whilegit\Utils\ImageCaptcha;
+use Whilegit\Utils\Image\ImageCaptcha;
 use Whilegit\Utils\Misc;
+use Whilegit\Utils\Location\Amap;
+//use Whilegit\Utils\Qrcode;
+use Whilegit\Utils\Image\Gd;
 require_once "vendor/autoload.php";
 
-$captcha = Misc::random(6);
-/* 保存验证码 */
-$image_captchar = new ImageCaptcha($captcha);
-$image_captchar->output();
-exit;
+$params = array(
+		'size'     => 600,  //二维码尺寸
+		'logopath' => __DIR__.'/static/image/logo.png',   //中间logo的图片位置，为空时不输出logo
+		'label'    => '微信扫一扫',   //二维码下方的文字，为空时不输出
+);
 
+echo Gd::qrcode('You belong with me', $params, true); exit;
+
+
+//$ary = Amap::geo('121.3312697411,28.5790573264');
+$ary = Amap::geo(array(array('lng'=>'121.457607','lat'=>'28.375191'), array('lng'=>'121.457607','lat'=>'28.375191')));
+Trace::out($ary);
 
 Trace::monolog('m2.log');
 
