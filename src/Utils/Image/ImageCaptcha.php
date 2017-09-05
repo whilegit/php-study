@@ -1,7 +1,7 @@
 <?php
 namespace Whilegit\Utils\Image;
 /**
- * 图片验证码封装库
+ * 图片验证码封装库(使用GD库)
  * @author Linzhongren
  * @example <pre>
  * $captcha = Misc::random(6);

@@ -12,7 +12,11 @@ use Whilegit\Utils\Misc;
 use Whilegit\Utils\Location\Amap;
 //use Whilegit\Utils\Qrcode;
 use Whilegit\Utils\Image\Gd;
+use Whilegit\Utils\Image\Magick;
 require_once "vendor/autoload.php";
+
+
+Trace::out(Magick::info());
 
 $params = array(
 		'size'     => 600,  //二维码尺寸

@@ -3,6 +3,7 @@ namespace Whilegit\Utils\image;
 use Endroid\QrCode\QrCode;
 //use Endroid\QrCode\ErrorCorrectionLevel;
 use Endroid\QrCode\LabelAlignment;
+use AliyunMNS\Exception\InvalidArgumentException;
 
 class Gd{
 	
@@ -96,5 +97,36 @@ class Gd{
 			$ret = $htmlout == false ? $color : sprintf("#%6x", $color);
 		}
 		return $ret;
+	}
+
+	
+	public static function info($param){
+		if(is_string($param)){
+			//检测图像文件, 当本地文件时才判断如下if语句，否则如果是http外网图片时不判断
+			if (substr($param, 0, 4) != 'http' && !is_file($imgname)) {
+				throw new \InvalidArgumentException("\$param指定的图像不存在($param)", '参数错误');
+			}
+			
+			//获取图像信息
+			$info = getimagesize($param);
+			
+			//检测图像合法性
+			if (false === $info || (IMAGETYPE_GIF === $info[2] && empty($info['bits']))) {
+				exit('非法图像文件');
+			}
+			
+			//设置图像信息
+			return array(
+					'width'  => $info[0],
+					'height' => $info[1],
+					'type'   => image_type_to_extension($info[2], false),
+					'mime'   => $info['mime'],
+			);
+		} else if(is_resource($param)){
+			$width = imagesx($param);
+			$height = imagesy($param);
+		} else {
+			throw new \InvalidArgumentException('$param的类型必须为string或resource', '参数错误');
+		}
 	}
 }
