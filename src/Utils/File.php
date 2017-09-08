@@ -109,4 +109,23 @@ class File{
 		}
 		return true;
 	}
+	
+	/**
+	 * 获取文件的扩展名
+	 * @param string $filename
+	 * @return string
+	 */
+	public static function suffix($filename){
+		return pathinfo($filename, PATHINFO_EXTENSION);
+	}
+	
+	public static function output($file, $mime = null){
+		ob_clean();
+		if($mime == null){
+			$mime = self::suffix($file);
+		}
+		header('content-type: image/' . $mime);
+		echo file_get_contents($file);
+		exit;
+	}
 }

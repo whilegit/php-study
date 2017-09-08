@@ -13,10 +13,28 @@ use Whilegit\Utils\Location\Amap;
 //use Whilegit\Utils\Qrcode;
 use Whilegit\Utils\Image\Gd;
 use Whilegit\Utils\Image\Magick;
+use Whilegit\Utils\File;
+use Whilegit\Utils\Image\Type;
 require_once "vendor/autoload.php";
 
 
-Trace::out(Magick::info());
+Trace::out(Type::is_png("test2.php"));
+
+
+$str = mb_convert_encoding('林忠仁','GBK', 'UTF-8');
+//echo $str;
+//var_dump(unpack('C*', $str)); exit;
+$magick = new Magick();
+$magick->input('E:/borrow-agreement.png')->setting_font('E:/msyh.ttf')->setting_pointsize(20)
+	   ->draw_text(360,350,'SN20170907153000123456')
+	   ->draw_text(485,410, '毛泽东')->draw_text(300,467,'331081198407237619') //出错人
+	   ->draw_text(485,525, '蒋介石')->draw_text(300,580,'331081198407237619') //借款人
+	   ->draw_text(420,5740, '蒋介石')->draw_text(280,5775,'2017')->draw_text(395, 5775, '09')->draw_text(476, 5775, '07') //借款人签名
+	   ->draw_text(420,5852, '毛泽东')->draw_text(280,5887,'2018')->draw_text(395, 5887, '08')->draw_text(476, 5887, '08') //出借人签名
+	   ->draw_text(280,6000,'2019')->draw_text(400, 6000, '09')->draw_text(480, 6000, '09') //365签名
+       ->output('E:/r_.jpg');
+//Magick::resize('E:/gamma.gif', 'E:/gamma_.gif', '1000%');
+File::output('E:/r_.jpg');
 
 $params = array(
 		'size'     => 600,  //二维码尺寸
