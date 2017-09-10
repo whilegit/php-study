@@ -76,4 +76,53 @@ class IArray{
 		}
 		return $rs;
 	}
+
+
+	
+	public static function createLinkString($para, $sort, $encode) {
+		
+		if($para == NULL || !is_array($para))
+			return "";
+	
+			$linkString = "";
+			if ($sort) {
+				$para = argSort ( $para );
+			}
+			while ( list ( $key, $value ) = each ( $para ) ) {
+				if ($encode) {
+					$value = urlencode ( $value );
+				}
+				$linkString .= $key . "=" . $value . "&";
+			}
+			// 去掉最后一个&字符
+			$linkString = substr ( $linkString, 0, count ( $linkString ) - 2 );
+	
+			return $linkString;
+	}
+	
+	/**
+	 * 将key1=val1&key2=val2...样式的字符串解析成数组，使用了内置函数parse_str()，主要是为解决base64编码中加号(+)的问题。<br>
+	 * parse_str将输入字符串的加号解析成空格，使键值中存在的+号解析成空格，损坏base64的完整性。<br>
+	 * 本函数特别适合解析银联支付接口的返回
+	 * @param string $str            待解析的字符串
+	 * @param array  $base64_fields  可能存在base64编码的key
+	*/
+	public static function parse_str($str, $base64_fields = array()){
+		$result = array();
+		parse_str($str, $result);
+		foreach($base64_fields as $field){
+			if(isset($result[$field])){
+				$tmpary = explode("\r\n", $result[$field]);
+				foreach($tmpary as &$line){
+					//过滤认证字符串的头部和尾部
+					if($line != '-----BEGIN CERTIFICATE-----' && $line != '-----END CERTIFICATE-----'){
+						$line = str_replace(' ', '+', $line);
+					}
+				}
+				unset($line);
+				$result[$field] = implode("\r\n", $tmpary);
+			}
+		}
+		return $result;
+	}
 }

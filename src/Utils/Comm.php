@@ -40,8 +40,9 @@ class Comm{
 				$urlset['host'] = $extra['ip'];
 				unset($extra['ip']);
 			}
-			curl_setopt($ch, CURLOPT_URL, $urlset['scheme'] . '://' . $urlset['host'] . ($urlset['port'] == '80' ? '' : ':' . $urlset['port']) 
-					. $urlset['path'] . $urlset['query']);   //设置链接
+			$real_url = $urlset['scheme'] . '://' . $urlset['host'] . ($urlset['port'] == '80' ? '' : ':' . $urlset['port']) . $urlset['path'] . $urlset['query'];
+			//Trace::out($real_url);
+			curl_setopt($ch, CURLOPT_URL, $real_url);   //设置链接
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);     //返回结果不直接输出至页面，而是保存进变量中
 			@curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);    //跟随重定向
 			curl_setopt($ch, CURLOPT_HEADER, 1);			 //返回结果中包含头信息
