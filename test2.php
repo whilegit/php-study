@@ -16,15 +16,30 @@ use Whilegit\Utils\Image\Magick;
 use Whilegit\Utils\File;
 use Whilegit\Utils\Image\Type;
 require_once "vendor/autoload.php";
-
-
-Trace::out(Type::is_png("test2.php"));
-
+/*
+echo '{
+  "status": "0",
+  "msg": "ok",
+  "result": {
+    "idcard": "330903198904215735",
+    "realname": "张先生",
+    "province": "浙江省",
+    "city": "舟山市",
+    "town": "普陀区",
+    "sex": "男",
+    "birth": "1989年04月21日",
+    "verifystatus": "1",
+    "verifymsg": "抱歉，身份证校验不一致！"
+  }
+}';
+exit;
 
 $str = mb_convert_encoding('林忠仁','GBK', 'UTF-8');
+*/
 //echo $str;
 //var_dump(unpack('C*', $str)); exit;
 $magick = new Magick();
+/*
 $magick->input('E:/borrow-agreement.png')->setting_font('E:/msyh.ttf')->setting_pointsize(20)
 	   ->draw_text(360,350,'SN20170907153000123456')
 	   ->draw_text(485,410, '毛泽东')->draw_text(300,467,'331081198407237619') //出错人
@@ -33,8 +48,15 @@ $magick->input('E:/borrow-agreement.png')->setting_font('E:/msyh.ttf')->setting_
 	   ->draw_text(420,5852, '毛泽东')->draw_text(280,5887,'2018')->draw_text(395, 5887, '08')->draw_text(476, 5887, '08') //出借人签名
 	   ->draw_text(280,6000,'2019')->draw_text(400, 6000, '09')->draw_text(480, 6000, '09') //365签名
        ->output('E:/r_.jpg');
-//Magick::resize('E:/gamma.gif', 'E:/gamma_.gif', '1000%');
-File::output('E:/r_.jpg');
+*/
+$pnts = array(array(40,0), array(40,50), array(50,60), array(100,200), array(300,200), array(300,100), array(200,60));
+$output_file = 'E:/r_.png';
+//$magick->input('logo:')/*->channel_fx('red=>alpha')->channel_fx('red=255')*/->channel_fx('blue=0')->channel_fx('green=0')->output($output_file);
+$magick->setting_background('blue')->setting_GRAVITY('center')
+	   ->stack('<')->addImages('E:/r_-0.jpg','E:/r.jpg')->append('horizontal')->stack('>')
+	   ->stack('{')->addImages('E:/r_-2.jpg','E:/r_-3.jpg')->append('horizontal')->stack('}')
+       ->append('vertical')->output($output_file);
+File::output($output_file);
 
 $params = array(
 		'size'     => 600,  //二维码尺寸

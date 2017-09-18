@@ -328,4 +328,13 @@ class Misc{
 		
 		$composer_autoloader->addPsr4($prefix, $subvendor ? $WHILEGIT_UTILS_COMPOSER_VENDOR_DIR ."/$path" : $path);
 	}
+
+
+	/**
+	 * 探测操作系统是否是Windows
+	 * @return boolean
+	 */
+	public static function is_windows(){
+		return !empty(stristr(PHP_OS, 'win'));
+	}
 }

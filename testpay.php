@@ -18,12 +18,23 @@ $order_info = array(
 	'frontUrl' => 'http://localhost:8086/upacp_demo_app/demo/api_05_app/FrontReceive.php', //前台通知地址
 	'backUrl' => 'http://222.222.222.222:8080/upacp_demo_app/demo/api_05_app/BackReceive.php',  //后台通知地址
 	'merId' => '777290058110048',    //商户代码，请改自己的测试商户号
-	'orderId' => '20170909090602',  //商户订单号，8-32位数字字母，不能含“-”或“_”
-	'txnTime' => '20170909090602',  //订单发送时间，格式时YYYYMMDDhhmmss
+	'orderId' => '20170915090602',  //商户订单号，8-32位数字字母，不能含“-”或“_”
+	'txnTime' => '20170915090602',  //订单发送时间，格式时YYYYMMDDhhmmss
 	'txnAmt' => '1000',   //交易金额，单位分
 );
 
 $result = $unionPay->comsume($order_info);
-Trace::out($result);
+if($result === false){
+	Trace::out('consume消费业务失败');
+} else {
+	if(!is_array($result) || empty($result['tn'])){
+		Trace::out('consume消费业务异常: ' . var_export($result, true));
+	} else {
+		//业务成功，此TN域返回给前端，供App调起银联模块
+		echo "TN: {$result['tn']}<br />\r\n";
+		
+		//查询
+		Trace::out($unionPay->query($order_info));
+	}
+}
 
-//Trace::out($result['content']);
