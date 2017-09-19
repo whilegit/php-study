@@ -264,6 +264,45 @@ class Magick{
 	}
 	
 	/**
+	 * 设置图片标签(输出图像的格式可以是tiff/png/miff等)
+	 * @desc <br /> 如写入文字有中文时，请指定字体文件。windows平台请转成gbk码
+	 * @param String $str
+	 * @return Magick
+	 * @example magick -background none -fill white -pointsize 72 -font msyh.ttf label:你好  label_Hello.png
+	 */
+	public function setting_label($text){
+		$this->commands[] = "label:$text";
+		return $this;
+	}
+	
+	
+	
+	/**
+	 * 设置图片合成的方法
+	 * @param string $method  支持的方法如下：src(覆盖物overlay), dest(底图，最后保留的图片)<pre>
+	 *  Src_Over : src置于dest之上
+	 *  Dst_Over : dest置于src之上
+	 *  Src	     : 清空dest的内容(保留长宽等meta-data)，src的内容替换进去(如dest尺寸较大，还可以设置生成图片的alpha通道,即dest未被覆盖部分设为透明，命令：-alpha set output_file.png) ??????????????????????????
+	 *  </pre>
+	 * @return Magick
+	 */
+	public function compose($method){
+		$this->commands[] = "-compose {$method}";
+		return $this;
+	}
+	
+	/**
+	 * 混合图片(这是一个独立程序，应紧邻magick之后)
+	 * @desc <br /> 接受-compose设置的混合方法(见compose)，接受一个-geometry设置，两个输入图片(前一个是src,后一个是dest)，最后一个是输出图片
+	 * @example magick composite -compose Dst_Over -geometry +5+5 label_A_black.png label_A_white.png label_A.png
+	 * @return Magick
+	 */
+	public function composite(){
+		$this->commands[] = "composite";
+		return $this;
+	}
+	
+	/**
 	 * 绘制矩形  
 	 * @desc <br />填充色可由setting_fill($color)设定
 	 * @desc <br/> setting_stroke($color) 指定边框线的颜色
@@ -586,6 +625,17 @@ class Magick{
 	 */
 	public function setting_geometry($geometry){
 		$this->commands[] = "-geometry {$geometry}";
+		return $this;
+	}
+	
+	/**
+	 * 设置Raw图片的尺寸
+	 * @param string $geometry  w x h + offset  如果raw数据中有头部，可以用offset跳过
+	 * @example magick -size 200x200 plasma:tomato-dodgerblue tomato.png
+	 * @return Magick
+	 */
+	public function setting_size($geometry){
+		$this->commands[] = "-size {$geometry}";
 		return $this;
 	}
 	
