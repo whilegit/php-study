@@ -125,4 +125,19 @@ class IArray{
 		}
 		return $result;
 	}
+
+	/**
+	 * 生成一个随机数组
+	 * @param int len  长度
+	 * @param int $min 最小值
+	 * @param int $max 最大值
+	 * @return array[int]
+	 */
+	public static function &rand_matrix($len, $min, $max){
+		$matrix = array();
+		for($i = 0; $i<$len; $i++){
+			$matrix[] = mt_rand($min, $max);
+		}
+		return $matrix;
+	}
 }

@@ -38,7 +38,33 @@ $str = mb_convert_encoding('林忠仁','GBK', 'UTF-8');
 */
 //echo $str;
 //var_dump(unpack('C*', $str)); exit;
+
+$rand_dir = 'E:/magick/pgm/rand';
+$output_file = \Whilegit\Utils\Image\Formats\Pgm::tg_rand($rand_dir, 16, 32);
+
+$tg_dir = 'E:/magick/pgm/tg';
+$output_file = \Whilegit\Utils\Image\Formats\Pgm::tg($tg_dir);
+
+$dest_dir = 'E:/magick/pgm/dest';
+if(!file_exists($dest_dir)) @mkdir($dest_dir, 0777, true);
+$dest_img = $dest_dir . '/main.png';
 $magick = new Magick();
+$magick->composite()->compose('src_over')->addImages($rand_dir . '/main.png')->addImages($tg_dir . '/main.png')->setting_alpha('set')->output($dest_img);
+
+$html = \Whilegit\Utils\Image\Formats\Pgm::html($dest_img, $dest_dir, $rand_dir, $tg_dir);
+//$html = \Whilegit\Utils\Image\Formats\Pgm::html($tg_dir . '/main.png', $tg_dir);
+
+echo "<html>
+<head></head>
+<style>
+td {border:0px;font-size:8px;}
+</style>
+<body>
+{$html}
+</body>
+</html>";
+exit;
+
 /*
 $magick->input('E:/borrow-agreement.png')->setting_font('E:/msyh.ttf')->setting_pointsize(20)
 	   ->draw_text(360,350,'SN20170907153000123456')

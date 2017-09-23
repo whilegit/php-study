@@ -71,32 +71,7 @@ class Gd{
 	 *     Gd::rgb(array (0 => 255,1 => 255, 2 => 128), true);  //out: 	#ffff80 </pre>
 	 */
 	public static function rgb($param, $htmlout = false){
-		$ret = null;
-		if(is_numeric($param) || is_string($param)){
-			if(is_numeric($param)) {
-				$color = intval($param);
-			} else {
-				if($param{0} == '#')   $param = substr($param, 1);
-				$color = intval(base_convert($param, 16, 10));
-			}
-			
-			if($htmlout == false){
-				$ret =  array(
-						0 => ($color >> 16) & 0xff,
-						1 => ($color >> 8) & 0xff,
-						2 => ($color) & 0xff, 
-				);
-				$ret['r'] = $ret[0];
-				$ret['g'] = $ret[1];
-				$ret['b'] = $ret[2];
-			} else {
-				$ret = sprintf("#%6x", $color);
-			}
-		} else if(is_array($param)){
-			$color = ($param[0] << 16) + ($param[1] << 8) + $param[2];
-			$ret = $htmlout == false ? $color : sprintf("#%6x", $color);
-		}
-		return $ret;
+		return Common::rgb($param, $htmlout);
 	}
 
 	

@@ -1,6 +1,6 @@
 <?php
 namespace Whilegit\Utils\Image;
-//use Whilegit\Utils\Trace;
+use Whilegit\Utils\Trace;
 use Whilegit\Utils\Misc;
 
 /**
@@ -28,12 +28,13 @@ class Magick{
 	 * @throws \Exception
 	 */
 	public function output($output){
+		
 		//if(empty($this->inputs)) throw new \Exception('无输入参数');
 		if(empty($output)) throw new \Exception('无输出参数');
 
 		$inputs = is_array($this->inputs) ? implode(' ', $this->inputs) : $this->inputs;
 		$commands = !empty($this->commands) ? implode(' ', $this->commands) : '';
-		
+
 		//区分Linux和Windows的命令行差别，特别是Windows需要将UTF-8转成GBK，否则命令行中的中文不被识别
 		if(Misc::is_windows()){
 			$cmd = "magick {$inputs} {$commands} {$output}";
@@ -41,7 +42,9 @@ class Magick{
 		} else {
 			$cmd = "convert {$inputs} {$commands} {$output}";
 		}
+		
 		//\Whilegit\Utils\Trace::out($cmd);
+		
 		exec ($cmd, $output_info, $return_val);
 		$this->inputs = null;
 		$this->commands = array();
@@ -276,13 +279,60 @@ class Magick{
 	}
 	
 	
+	/**
+	 * alpha通道相关的设置 Used to set a flag on an image indicating whether or not to use existing alpha channel data, to create an alpha channel, or to perform other operations on the alpha channel
+	 * @param string $type 类型(可选的值如下，具体含义还需要实践)<pre>
+	 * 	Activate: 
+	 *  Associate:
+	 *  Deactivate:
+	 *  Disassociate:
+	 *  Set:
+	 *  Opaque:
+	 *  Transparent:
+	 *  Extract:
+	 *  Copy:
+	 *  Shape:
+	 *  Remove:
+	 *  Background:
+	 * </pre> 
+	 * @link http://www.imagemagick.org/script/command-line-options.php#alpha
+	 * @return Magick
+	 * @example 
+	 * <br /> //src尺寸小于dest,若不加-alpha set，则src原透明部分变成黑色；加了src原透明部分继续透明。两种情况下，dest底色未被覆盖部分内容保持不变
+	 * <br />magick composite -compose Src src.gif rose: -alpha set output_file.png 
+	 * <br /> //继续前一种方式，加了 -alpha activate后，效果就等于清空并置dest为完全透明，src叠加在dest上
+	 * <br />magick composite -compose Src src.gif rose: -alpha activate output_file.png
+	 * 
+	 */
+	public function setting_alpha($type){
+		$this->commands[] = "-alpha {$type}";
+		return $this;
+	}
 	
 	/**
 	 * 设置图片合成的方法
 	 * @param string $method  支持的方法如下：src(覆盖物overlay), dest(底图，最后保留的图片)<pre>
 	 *  Src_Over : src置于dest之上
 	 *  Dst_Over : dest置于src之上
-	 *  Src	     : 清空dest的内容(保留长宽等meta-data)，src的内容替换进去(如dest尺寸较大，还可以设置生成图片的alpha通道,即dest未被覆盖部分设为透明，命令：-alpha set output_file.png) ??????????????????????????
+	 *  Src	     : important!{官网上说，Src方法会清空dest的内容，但实操时并不会} 保留dest的长宽；<br>若src的尺寸大于dest，则src完全覆盖dest;<br>
+	 *             若src尺寸小于dest，输出前加上alpha set，则在src所覆盖部分变成透明，输出前加上alpha activate,则整个dest变成透明
+	 *  Copy     : 把src的内容crop到dest上，不改动dest的内容。但实操时，Copy和Src，除了不加-alpha选项时，Copy的底色为灰色，Src为黑色外，其它没什么差异
+	 *  Dst      : 这是一个空操作
+	 *  Dst_In   : 用src对dest进行掩摸mask (两张图片的alpha值相乘，舍弃src的颜色信息)
+	 *  Dst_Out  : 把dest挖出具有src形状的窟窿(相当于dest的alpha值减去src的alpha值，并舍弃src的颜色信息)
+	 *  ATop     : 跟Src类似，但保留dest的alpha通道(可合成一些三维光效)
+	 *  Multiply : dest*src，使得dest颜色总体变暗。
+	 *  Darkern  : min(dest,src)，使得dest颜色总体变暗。
+	 *  Lighter  : max(dest,src), 使得dest颜色总体变亮。
+	 *  Screen   : 1 - (1 - src) * (1 - dest)，总体颜色变亮，一方是黑色的输出颜色是另一方，一方是白色的输出颜色是白色。
+	 *  Plus     : src + dest(加权计算), 超过后截取为255。注：plus合成时，默认时alpha通道直接相加(超过限值后截取为255)，相比其它操作符这是唯一这样做的。
+	 *             src : r(209) g(62) b(231) a(53)
+	 *			   dest: r(64)  g(64) b(0)   a(128)
+	 *			   out : r(76)  g(45) b(48)  a(181)
+	 *  Add      : 与Plus类似，但在处理alpha通道时有所不同，新alpha值的计算公式是 1 - (1-src.alpha) * (1-dest.alpha)
+	 *  		   src : r(57)  g(156) b(138) a(89)
+	 *  		   dest: r(224) g(224) b(0)   a(160)
+     *             out : r(105) g(139) b(48)  a(193)
 	 *  </pre>
 	 * @return Magick
 	 */
@@ -299,6 +349,18 @@ class Magick{
 	 */
 	public function composite(){
 		$this->commands[] = "composite";
+		return $this;
+	}
+	
+	/**
+	 * 溶解(水印)
+	 * @param string $percent 溶解比例，可接受 50或50x50或150这样的参数。
+	 * @example magick composite -dissolve 50 src.png dest.png out.png
+	 * @return Magick
+	 * @link http://www.imagemagick.org/script/command-line-options.php#dissolve
+	 */
+	public function dissolve($percent){
+		$this->commands[] = "-dissolve {$percent}";
 		return $this;
 	}
 	
@@ -481,13 +543,24 @@ class Magick{
 	 * @example -channel-fx "red=>green"      //red通道的值替换green通道的值 (r100,g120,b140) => (r100,g100,b140)
 	 * @example -channel-fx "red=>alpha"      //alpha通道的值由red替换，没有红色的区域将变成透明
 	 * @example -channel-fx "red<=>green"     //red通道和green通道互换 (r100,g120,b140) => (r120,g100,b140)
-	 * @example magick logo: mask.pgm -channel-fx "| gray=>alpha" logo-mask.png  //logo-mask.png的alpha通道为mask.pgm这个灰度文件
+	 * @example -channel-fx "red;green;blue"  //将有三个输出值，具体用途不详
+	 * @example magick logo: mask.pgm -channel-fx "| gray=>alpha" logo-mask.png  //logo-mask.png的alpha通道为mask.pgm这个灰度文件(注入alpha通道)
 	 */
 	public function channel_fx($exp){
 		$this->commands[] = "-channel-fx \"{$exp}\"";
 		return $this;
 	}
 	
+	/**
+	 * 限定后续操作的通道
+	 * @param string $type 可选值为 Red,Green,Blue,Alpha,Gray,Cyan,Magenta,Yellow,Black,Opacity,Index,RGB,RGBA,CMYK,CMYKA
+	 * @example magick -size 70x70 xc:none -draw "circle 35,35 35,20" -channel RGB -negate -channel A -blur 0x8 highlight.png  此命令生与一个高亮的光圈
+	 * @return Magick
+	 */
+	public function setting_channel($type){
+		$this->commands[] = "-channel {$type}";
+		return $this;
+	}
 	
 	/**
 	 * 拼接图片
@@ -650,6 +723,31 @@ class Magick{
 	public function setting_gravity($type){
 		$type = ucfirst(strtolower($type));
 		$this->commands[] = "-gravity $type";
+		return $this;
+	}
+	
+	/**
+	 * 合成gif时，设帧之间的间隔
+	 * @desc <br> gif合成时还可选择setting_loop(...)等选项
+	 * @param string|int $ticks <pre>
+	 * 	 可以输入 50 或 50x100 或者 50x200  格式为 ticks[* ticks_per_second] ，其中ticks_per_secord的默认值为100。参数50表示半秒一幅图，50x200表示0.25秒一幅图.
+	 *   可以在最后加上>或< <br>       50> 表示当前值大于50时，调整到50。<br/>        50< 表示前当值小于50时，调整到50。
+	 *  </pre>
+	 * @example magick -delay 100 *.jpg dest.gif 注意：delay应在输入图片之前或中间设置
+	 * @return Magick
+	 */
+	public function setting_delay($ticks){
+		$this->commands[] = "-delay {$ticks}";
+		return $this;
+	}
+	
+	/**
+	 * 合成gif时，设置循环次数
+	 * @param int $iterations 播放次数，为0时表示无限循环
+	 * @return Magick
+	 */
+	public function setting_loop($iterations){
+		$this->commands[] = "-loop {$iterations}";
 		return $this;
 	}
 	
