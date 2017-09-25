@@ -88,8 +88,8 @@ class Pgm{
 				$data = preg_replace("/\\s+/", ' ', $data);
 				$data = explode(' ', $data);
 				array_shift($data);  //P2
-				array_shift($data);  //width
-				array_shift($data);  //height
+				$width = array_shift($data);  //width
+				$height = array_shift($data);  //height
 				array_shift($data);  //max
 				array_walk($data, function(&$val){
 					$val = intval($val);
@@ -319,11 +319,11 @@ class Pgm{
 	 * @return mixed
 	 */
 	private static function binary_read_meta(&$ary){
-		$sep = array(' ', "\n", "\t", "\r");
+		$sep = array(' ', "\n", "\r");
 		$str = '';
 		do{
 			$ch = chr(array_shift($ary));
-			if($ch == '\r') continue;
+			if($ch == "\r" && $ary[0] == "\n") continue;
 			$str .= $ch;
 		} while(!in_array($ch, $sep));
 		$str = str_replace($sep, '', $str);
@@ -364,7 +364,7 @@ class Pgm{
 			$src2_blue_path = $src2_dir . '/blue.pgm';
 			$src2_alpha_path = $src2_dir . '/alpha.pgm';
 			$src2_red = self::parseFromFile($src2_red_path);
-			Trace::out($src2_red);
+			//Trace::out($src2_red);
 			$src2_green = self::parseFromFile($src2_green_path);
 			$src2_blue = self::parseFromFile($src2_blue_path);
 			$src2_alpha = self::parseFromFile($src2_alpha_path);
@@ -384,7 +384,7 @@ class Pgm{
 		}
 		
 		$html = array();
-		$html[] = '<table width="200%" border="0" cellspacing="0">';
+		$html[] = '<table width="200%" border="0" cellspacing="0" style="font-size:14px;">';
 		for($i = 0; $i<$output_height; $i++){
 			$html[] = '<tr>';
 			for($j = 0; $j<$output_width; $j++){

@@ -335,6 +335,8 @@ class Misc{
 	 * @return boolean
 	 */
 	public static function is_windows(){
-		return !empty(stristr(PHP_OS, 'win'));
+		$pwd = getcwd();
+		return $pwd{0} != '/';
+
 	}
 }

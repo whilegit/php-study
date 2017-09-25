@@ -34,14 +34,11 @@ class Magick{
 
 		$inputs = is_array($this->inputs) ? implode(' ', $this->inputs) : $this->inputs;
 		$commands = !empty($this->commands) ? implode(' ', $this->commands) : '';
-
+		$cmd = "magick {$inputs} {$commands} {$output}";
 		//区分Linux和Windows的命令行差别，特别是Windows需要将UTF-8转成GBK，否则命令行中的中文不被识别
 		if(Misc::is_windows()){
-			$cmd = "magick {$inputs} {$commands} {$output}";
 			$cmd = mb_convert_encoding ( $cmd , "gbk");
-		} else {
-			$cmd = "convert {$inputs} {$commands} {$output}";
-		}
+		} 
 		
 		//\Whilegit\Utils\Trace::out($cmd);
 		

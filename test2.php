@@ -1,4 +1,7 @@
 <?php 
+
+error_reporting(E_ALL);
+ini_set('dispay_errors', 'On');
 use Whilegit\Utils\Excel;
 use Whilegit\Utils\Trace;
 use Whilegit\Utils\IArray;
@@ -39,13 +42,13 @@ $str = mb_convert_encoding('林忠仁','GBK', 'UTF-8');
 //echo $str;
 //var_dump(unpack('C*', $str)); exit;
 
-$rand_dir = 'E:/magick/pgm/rand';
+$rand_dir = getcwd().'/magick/pgm/rand';
 $output_file = \Whilegit\Utils\Image\Formats\Pgm::tg_rand($rand_dir, 16, 32);
 
-$tg_dir = 'E:/magick/pgm/tg';
+$tg_dir = getcwd() . '/magick/pgm/tg';
 $output_file = \Whilegit\Utils\Image\Formats\Pgm::tg($tg_dir);
 
-$dest_dir = 'E:/magick/pgm/dest';
+$dest_dir = getcwd() . '/magick/pgm/dest';
 if(!file_exists($dest_dir)) @mkdir($dest_dir, 0777, true);
 $dest_img = $dest_dir . '/main.png';
 $magick = new Magick();
@@ -57,7 +60,7 @@ $html = \Whilegit\Utils\Image\Formats\Pgm::html($dest_img, $dest_dir, $rand_dir,
 echo "<html>
 <head></head>
 <style>
-td {border:0px;font-size:8px;}
+td {border:0px;font-size:12px;}
 </style>
 <body>
 {$html}
