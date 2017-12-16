@@ -14,7 +14,28 @@ WE7 x1.5.1 201707240001 关键全局变量和常量
 * $_W['ispost'] 是否是post请求
 * $_W['sitescheme'] 根据$_W['ishttps']不同，可能为https:// 或 http:// 字符串之一
 * $_W['script_name'] 请求uri(无参数)
-* $_
+* $_W['siteroot'] $_W['siteurl'] 请求路径相关 
+* $_W['uniacid'] 公众号的uniacid，取自$_GPC['i'], 如无$_GPC['i']取$_GPC['weid']
+* $_W['setting'] 存放 core_settings表的内容
+* $_W['uniaccount'] 通过$_W['uniacid']获得的公众号帐号信息
+* $_W['openid']
+* $_W['fans']
+* $_W['uid']
+* $_W['fans']
+* $_W['oauth_account'] = $_W['account']['oauth'] 授权相关
+
+## $_GPC
+* $_GPC['c']  $controller
+* $_GPC['a']  $action
+* $_GPC['do'] $do
+* $_GPC['i']  向$_W['uniacid']赋值
+* $_GPC['weid'] 如果$_GPC中不存在$_GPC['i'],则以此值给$_W['uniacid']赋值
+* $_GPC['state'] 此值通常为we7sid-xxxxxxxx，其中-后面部分构成session_id，如无，则可能使用PHPSESSION
+* $_GPC['j'] 公众号相关
+* $_GPC['t'] 与表 site_multi 相关
+* $_GPC['s'] 与表 site_styles 相关
+* $_GPC['eid'] 模块绑定相关
+* $_GPC['p'] sz_yi相关
 
 ## 常量
 * STARTTIME = microtime()
