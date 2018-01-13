@@ -39,7 +39,6 @@ class Magick{
 		if(Misc::is_windows()){
 			$cmd = mb_convert_encoding ( $cmd , "gbk");
 		} 
-		
 		//\Whilegit\Utils\Trace::out($cmd);
 		
 		exec ($cmd, $output_info, $return_val);

@@ -7,6 +7,7 @@ class IArray{
 	/**
 	 * 简单关联数组转xml (递归)
 	 * @param array  $arr 
+	 * @param string 根结点的名称 
 	 * @param number $level 递归级别， 为1时头尾加xml头部   
 	 * @return string
 	 * @example <pre>
@@ -19,7 +20,7 @@ class IArray{
      *  );
 	 * </pre>
 	 */
-	public static function toXml($arr, $level = 1) {
+	public static function toXml($arr, $root='root', $level = 1) {
 		$xml = '';
 		foreach ($arr as $tag => $val) {
 			if(!is_string($tag) && is_array($val) && key_exists('tag', $val)){
@@ -30,12 +31,11 @@ class IArray{
 			if (!is_array($val)) {
 				$xml .= "{$pad}<{$tag}>" . (!is_numeric($val) ? '<![CDATA[' : '') . $val . (!is_numeric($val) ? ']]>' : '') . "</{$tag}>\r\n";
 			} else {
-				$xml .= "{$pad}<{$tag}>\r\n" . self::toxml($val, $level + 1) . "{$pad}</{$tag}>\r\n";
+			    $xml .= "{$pad}<{$tag}>\r\n" . self::toxml($val, $root, $level + 1) . "{$pad}</{$tag}>\r\n";
 			}
 		}
 		$xml = preg_replace("/[\x01-\x08\x0b-\x0c\x0e-\x1f]/", ' ', $xml);
-		
-		return $level == 1 ? "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\r\n<ary>\r\n{$xml}</ary>\r\n" : $xml;
+		return $level == 1 ? "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\r\n<{$root}>\r\n{$xml}</{$root}>\r\n" : $xml;
 	}
 	
 	

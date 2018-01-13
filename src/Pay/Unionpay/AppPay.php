@@ -194,10 +194,10 @@ class AppPay{
 			$this->monolog->error ( "银联consume交易:Http应答验证签名失败" . var_export($result_arr, true));
 			return false;
 		}
-		
+
 		//是否成功获取tn号
 		if(empty($result_arr['tn']) || $result_arr['respMsg'] != '成功[0000000]'){
-			$this->monolog->error ( "银联consume交易：创建TN失败" . export($result_arr, true));
+			$this->monolog->error ( "银联consume交易：创建TN失败" . var_export($result_arr, true));
 			return false;
 		}
 		

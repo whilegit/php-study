@@ -16,7 +16,6 @@ class Gd{
 	 */
 	public static function qrcode($str, $params = array(), $html_out = true ){
 		$qrCode = new QrCode($str);
-
 		$params = array_merge(array(
 				'size'     => 300,  //二维码尺寸
 				'margin'   => 15,   //二维码整体的边距
@@ -36,14 +35,15 @@ class Gd{
 			   ->setForegroundColor(self::rgb($params['foreground_color']))
 			   ->setBackgroundColor(self::rgb($params['background_color']))
 			   ->setValidateResult(false);
-		
 		if(!empty($params['label'])){
 			//调整文字的上下边距
 			$labelMargin = array ('t' => $params['size']/30 - $params['margin'],'b' => $params['size']/30);
 			$qrCode->setLabel($params['label'], $params['size']/15, $params['fontpath'], LabelAlignment::CENTER, $labelMargin);
 		}
-		
 		if(!empty($params['logopath'])){
+		    if(!file_exists($params['logopath'])){
+		        die("{$params['logopath']} is not existed.");
+		    }
 			$qrCode->setLogoPath($params['logopath'])->setLogoWidth($params['size']/4);
 		}
 		$string = $qrCode->writeString();

@@ -4,6 +4,17 @@ use Whilegit\Utils\IArray;
 
 /**
  * 基础封装 PDO类，单例模式
+ * @desc <pre>
+ *   初化时：
+ *   $db_config  = array(
+ *	    'dbname' => 'jpress',
+ *	    'host' => '127.0.0.1',
+ *	    'port' => 3306,
+ *	    'username' => 'root',
+ *	    'password' => '317507Ok()lzr',
+ *	    'charset' => 'utf8');
+ *	IPdo::instance('master', $db_config);
+ *	IPdo::instance()->table(function($table){return "jpress_{$table}";});</pre>
  * @author Linzhongren
  */
 class IPdo{
@@ -59,7 +70,11 @@ class IPdo{
 		if($param == null) {
 			return $this->table_callback;
 		} else if (is_string($param)){
-			return call_user_func($this->table_callback, $param);
+		    if(!empty($this->table_callback)){
+			    return call_user_func($this->table_callback, $param);
+		    } else {
+		        return $param;
+		    }
 		} else if(is_callable($param)){
 			$this->table_callback = $param;
 			return $this;

@@ -67,7 +67,7 @@ class File{
 	/**
 	 * 判定上传文件大小是否符合要求
 	 * @param $files array[][] 由File::upload_getfiles()返回
-	 * @param unknown $maxSize 最大允许值
+	 * @param number $maxSize 最大允许值
 	 * @param number $minSize  最小允许值
 	 * @return string|boolean
 	 */
@@ -95,8 +95,8 @@ class File{
 
 	/**
 	 * 移动上传文件至常规位置
-	 * @param unknown $postfile  $_FILES的子数组
-	 * @param unknown $dest_file 目标文件路径(目录不要求必须存在)
+	 * @param array $postfile  $_FILES的子数组
+	 * @param string $dest_file 目标文件路径(目录不要求必须存在)
 	 * @return string|boolean
 	 */
 	public static function upload_move($postfile, $dest_file){

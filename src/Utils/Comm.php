@@ -52,7 +52,7 @@ class Comm{
 					$filepost = false;
 					foreach ($post as $name => $value) {
 						//post参数表的键值中有@或者CURLFile对象时，表明本次请求有文件上传
-						if ((is_string($value) && substr($value, 0, 1) == '@') || (class_exists('CURLFile') && $value instanceof CURLFile)) {
+						if ((is_string($value) && substr($value, 0, 1) == '@') || (class_exists('CURLFile') && $value instanceof \CURLFile)) {
 							$filepost = true;
 							break;
 						}

@@ -42,6 +42,8 @@ Composer 基础(PHP的作曲家)
 		}
     }
 
+## 7. 从国外境像切换到国内镜像
+* 使用命令 composer config -g repo.packagist composer https://packagist.phpcomposer.com  
 
 # 二. 配置文件 composer.json和composer.lock
 > composer.json文件

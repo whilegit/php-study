@@ -3,8 +3,6 @@ namespace Whilegit\Utils;
 use PHPExcel;
 use PHPExcel_IOFactory;
 use PHPExcel_Cell;
-use Whilegit\Utils\File;
-use Whilegit\Utils\Misc;
 class Excel{
 	
 	/**
@@ -76,6 +74,12 @@ class Excel{
 		
 		//设置第一行的表头
 		$rownum = 1;
+		if(empty($params)){
+		    $params = array('columns'=>array(), 'title'=>'default_');
+		    foreach($list[0] as $k=>$v){
+		        $params['columns'][] = array('field'=>$k, 'width'=>2*strlen($k), 'title'=>$k);
+		    }
+		}
 		foreach ($params['columns'] as $key => $column )
 		{
 			$sheet->setCellValue(self::column($key, $rownum), $column['title']);
@@ -84,6 +88,7 @@ class Excel{
 				$sheet->getColumnDimension(self::$COLS[$key])->setWidth($column['width']);
 			}
 		}
+		
 		//设置数据部分
 		++$rownum;
 		$len = count($params['columns']);
@@ -111,7 +116,7 @@ class Excel{
 			exit();
 		} else {
 			if(!File::mkdirs(dirname($path))){
-				return '上传Excel 文件失败, 请重新上传!';
+				return '新建目录失败';
 			}
 			$writer->save($path);
 			return true;

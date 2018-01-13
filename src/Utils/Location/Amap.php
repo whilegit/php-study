@@ -20,7 +20,6 @@ class Amap{
 	 * @param string|array|array[] $address
 	 * @param array $params
 	 * @throws \Exception
-	 * @return json转成的关联数组或者null
 	 * @example Amap::geo('浙江省台州市路桥区桐屿街道中国日用品商城')               =>   转 经纬度
 	 * @example Amap::geo(array('浙江省台州市路桥区','浙江省温岭市箬横镇浦岙村'))   =>   返回两个地址的经纬度
 	 * @example Amap::geo(array('lng'=>'121.457607','lat'=>'28.375191'));      =>   返回此经纬度代表的地址
@@ -28,6 +27,7 @@ class Amap{
 	 *                          array('lng'=>'121.457607','lat'=>'28.375191'))); =>   返回此经纬度代表的地址
 	 * @example Amap::geo('121.457607,28.375191');                             =>   返回此经纬度代表的地址
 	 * @example Amap::geo(array('121.4576,28.3751', '121.4676,28.3751'));      =>   返回多个经纬度代表的址址
+	 * @return json转成的关联数组或者null
 	 */
 	public static function geo($address, $params = array()){
 		if(empty(self::$key)) throw new \Exception("请通过调用Amap::init(\$key)函数初始化\$key参数");

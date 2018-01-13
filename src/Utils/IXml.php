@@ -8,7 +8,7 @@ class IXml{
 		}
 		$result = array();
 		$xmlobj = isimplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA);
-		if($xmlobj instanceof SimpleXMLElement) {
+		if($xmlobj instanceof \SimpleXMLElement) {
 			$result = json_decode(json_encode($xmlobj), true);
 			if (is_array($result)) {
 				return $result;

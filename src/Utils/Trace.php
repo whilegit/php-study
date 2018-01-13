@@ -41,7 +41,7 @@ class Trace{
 		
 				$params = self::reflect_params($mr);
 				$info = $modifiers . ' ' . $function . ' ( '.$params.' )';
-			}catch(Exception $e){
+			}catch(\Exception $e){
 				$info = array('success'=>false, 'msg'=>$callable . '()方法不存在，请检查__call()魔术方法');
 			}
 		}else{

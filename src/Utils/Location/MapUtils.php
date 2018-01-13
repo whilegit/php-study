@@ -1,7 +1,7 @@
 <?php
 namespace Whilegit\Utils\Location;
 
-class MapBase{
+class MapUtils{
 	/**
 	 * 判断一个字符串是否是经纬度
 	 * @param unknown $address
