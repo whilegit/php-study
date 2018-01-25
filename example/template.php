@@ -6,7 +6,6 @@ Template::init(array('template_path'=>ROOT_PATH . '/example/TEMP/templates',
                      'compile_path' => ROOT_PATH . '/example/TEMP/compiled',
                      'include_template_path' => ROOT_PATH . '/example/TEMP/templates/include',
                      'include_compile_path' => ROOT_PATH . '/example/TEMP/compiled/include',
-    
 ));
 
 Template::addSpecialFunc('url', function($url, $url2 = array()){
@@ -25,6 +24,10 @@ function add($a, $b){
     return $a + $b;
 }
 Template::addSpecialFunc('add');
+
+Template::addSpecialFunc('css', function($src){
+    return "<link href=\"http://php-study/example/TEMP/css/font/{$src}\" rel=\"stylesheet\">";
+});
 
 function cp($t){
     return true;
