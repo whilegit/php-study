@@ -339,4 +339,15 @@ class Misc{
 		return $pwd{0} != '/';
 
 	}
+
+	public static function fullUrl(){
+	    $url = self::ishttps() ? 'https://' : 'http://';
+	    $url .= $_SERVER['HTTP_HOST'] . $_SERVER['SCRIPT_NAME'];
+
+	    if(!empty($_SERVER['QUERY_STRING'])) {
+	        $url .= '?' . $_SERVER['QUERY_STRING'];
+	    }
+	    
+	    return $url;
+	}
 }
