@@ -59,7 +59,24 @@ class Pay{
     /**
      * 成生网页调起微信支付的参数数组
      * @param string $prepay_id  预支付码
-     * @return array
+     * @example <pre>
+     * WeixinJSBridge.invoke(
+     *      'getBrandWCPayRequest', 
+     *      {
+     *          'appId': wechat.appId,
+     *          'timeStamp': wechat.timeStamp,
+     *          'nonceStr': wechat.nonceStr,
+     *          'package': wechat.package,
+     *          'signType': wechat.signType,
+     *          'paySign': wechat.paySign,
+     *      }, 
+     *      function (res) {
+     *          if (res.err_msg == 'get_brand_wcpay_request:ok') {
+     *          } else if(res.err_msg=='get_brand_wcpay_request:cancel') {
+     *          } else {
+     *          }
+     *      }); </pre>
+     * @return array 供js发起支付调用的关键参数
      */
     public function jsapiBridgeParams($prepay_id){
         $data = array();

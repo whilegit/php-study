@@ -71,7 +71,7 @@ class Gd{
 	 *     Gd::rgb(array (0 => 255,1 => 255, 2 => 128), true);  //out: 	#ffff80 </pre>
 	 */
 	public static function rgb($param, $htmlout = false){
-		return Common::rgb($param, $htmlout);
+	    return \Whilegit\Utils\Image\Common::rgb($param, $htmlout);
 	}
 
 	

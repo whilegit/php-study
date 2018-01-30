@@ -369,4 +369,20 @@ class Comm{
 		unset($tmp);
 		return $str;
 	}
+	
+	
+	/**
+	 * 检测request方法、get方法、post方法是否执行错误
+	 * @param $request_return request/get/post方法的返回值
+	 * @example request/get/post方法的错误时的返回值  return array('success'=>false, 'msg' =>'xxx错误原因xxx');  正确返回array(查看response_parse函数)
+	 * @example request/get/post方法正确时的返回值 array  {'code'=>'200', 'status'=>'OK', 'responseline':'xx响应行xx', 'headers':array, 'meta'=>'原始数据', 'content':'xxx页面htmlxx'}
+	 * @return true有错误，false没有错误(可以放心使用$request_return['content']的内容)
+	 */
+	public static function is_error($request_return){
+	    if(!is_array($request_return)) return true;
+	    if(isset($request_return['success']) && $request_return['success'] == false) return true;
+	    if(empty($request_return['code']) || empty($request_return['status'])) return true;
+	    if($request_return['code'] != '200' || $request_return['status'] != 'OK') return true;
+	    return false;
+	}
 }

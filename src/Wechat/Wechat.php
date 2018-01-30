@@ -8,10 +8,85 @@ class Wechat{
     
     protected $appId;
     protected $appSecret;
+    protected $accessToken = null;
+    protected $accessTokenExpire;
     
-    public function __construct($appId, $appSecret){
+    /**
+      * 缓存层回调。用于获取缓存了的access_token
+      * @var callback 原型 function($appId){} 返回 null 或者  array('token'=>'xxxxxxx', 'expire'=>'xxxxxxx');
+      */
+    protected $getCacheAccessTokenFunc;
+    /**
+     * 缓存层回调。用于缓存access_token
+     * @var 原型 function($appId, $record){}  $record = array('token'=>'xxxxx', 'expire'=>'xxxxx')
+     */
+    protected $setCacheAccessTokenFunc;
+    
+    /**
+     * 构造函数
+     * @param string $appId
+     * @param string $appSecret
+     * @param string $getCacheAccessTokenFunc 可选，用于从缓存层获取 access_token
+     * @param string $setCacheAccessTokenFunc 可选，用于缓存access_token至缓存层
+     */
+    public function __construct($appId, $appSecret, $getCacheAccessTokenFunc = null, $setCacheAccessTokenFunc = null){
         $this->appId = $appId;
         $this->appSecret = $appSecret;
+        
+        $this->getCacheAccessTokenFunc = $getCacheAccessTokenFunc;
+        $this->setCacheAccessTokenFunc = $setCacheAccessTokenFunc;
+    }
+    
+    /**
+     * 获取一个有效的access_token，
+     * @param callable $getCacheAccessTokenFunc 可选，用于从缓存层获取 access_token
+     * @param callable $setCacheAccessTokenFunc 可选，用于缓存access_token至缓存层
+     * @example 若构造函数提供了这两个回调，则调用本函数时不需要提供参数。
+     * @example 若构造函数没有提供这两个回调，调用本函数时也没有提供这两个参数，则直接从远程微信服务器拉取access_token(注意access_token混乱的问题)
+     * @return string|null
+     */
+    public function getAccessToken($getCacheAccessTokenFunc = null, $setCacheAccessTokenFunc = null) {
+        $curtime = time();
+        if(!empty($this->accessToken) && $curtime < $this->accessTokenExpire) return $this->accessToken;
+        if(!empty($getCacheAccessTokenFunc)) $this->getCacheAccessTokenFunc = $getCacheAccessTokenFunc;
+        if(!empty($setCacheAccessTokenFunc)) $this->setCacheAccessTokenFunc = $setCacheAccessTokenFunc;
+        if(!empty($this->getCacheAccessTokenFunc)){
+            $cache = call_user_func($this->getCacheAccessTokenFunc, $this->appId);
+            if (!empty($cache) && !empty($cache['token']) && $cache['expire'] > $curtime) {
+                $this->accessToken = $cache['token'];
+                $this->accessTokenExpire = $cache['expire'];
+                return $this->accessToken;
+            }
+        }
+        
+        $record = $this->getAccessTokenReal();
+        if(empty($record) ) return null;
+        
+        $this->accessToken = $record['token'];
+        $this->accessTokenExpire = $record['expire'];
+        if(!empty($this->setCacheAccessTokenFunc)){
+            call_user_func($this->setCacheAccessTokenFunc, $this->appId, $record);
+        }
+        return $this->accessToken;
+    }
+    
+    /**
+     * 从远程微信服务器获取access_token
+     * @return false|array  出错false, 正确返回 array('token'=>'xxxx', 'expire'=>'xxxxxxx')
+     */
+    protected function getAccessTokenReal(){
+        $url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid={$this->appId}&secret={$this->appSecret}";
+        $content = Comm::get($url);
+        if(Comm::is_error($content)) return null;
+
+        $token = @json_decode($content['content'], true);
+        if(empty($token) || !is_array($token) || empty($token['access_token']) || empty($token['expires_in'])) {
+            return false;
+        }
+        $record = array();
+        $record['token'] = $token['access_token'];
+        $record['expire'] = time() + $token['expires_in'] - 200;
+        return $record;
     }
     
     /**
@@ -62,7 +137,7 @@ class Wechat{
             $tmpStr .= "{$k}={$v}&";
         }
         $tmpStr .="key={$key}"; 
-        return strtoupper(md5($tmpStr));;
+        return strtoupper(md5($tmpStr));
     }
     
     public function getAppId(){return $this->appId;}

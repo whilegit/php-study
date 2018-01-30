@@ -340,6 +340,10 @@ class Misc{
 
 	}
 
+	/**
+	 * 获取当前url的全链接
+	 * @return string
+	 */
 	public static function fullUrl(){
 	    $url = self::ishttps() ? 'https://' : 'http://';
 	    $url .= $_SERVER['HTTP_HOST'] . $_SERVER['SCRIPT_NAME'];
