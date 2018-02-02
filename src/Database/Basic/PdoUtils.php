@@ -64,7 +64,7 @@ class PdoUtils{
 				$result['fields'] .= $split . "$field IN (" . implode(",", $insql) . ")";
 				
 			} else {
-				$result['fields'] .= $split . "$field {$operator} {$sf}";
+			    $result['fields'] .= $split . "`{$field}` {$operator} {$sf}";
 				$result['params'][$sf] = is_null($value) ? '' : $value;
 			}
 			$split = ' ' . $glue . ' ';

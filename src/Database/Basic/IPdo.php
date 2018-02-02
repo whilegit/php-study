@@ -1,6 +1,7 @@
 <?php
 namespace Whilegit\Database\Basic;
 use Whilegit\Utils\IArray;
+use PDO;
 
 /**
  * 基础封装 PDO类，单例模式
@@ -88,7 +89,6 @@ class IPdo{
 	 */
 	public function prepare($sql) { 
 		$sql = PdoUtils::replace_table($sql, $this->table_callback);
-		//if($sql != 'DESCRIBE jpress_user' || $sql != 'SELECT * FROM jpress_user   ') \Whilegit\Utils\Trace::out($sql);
 		$statement = $this->pdo->prepare($sql);
 		return $statement;
 	}
@@ -171,7 +171,7 @@ class IPdo{
 	
 	/**
 	 * 获取第一行记录的第$column列的内容
-	 * @param unknown $sql  查询语句
+	 * @param string $sql  查询语句
 	 * @param array $params 条件
 	 * @param int $column   返回的某一个列
 	 * @return boolean|string 失败返回false，成功返回该列的内容
@@ -299,10 +299,10 @@ class IPdo{
 	
 	/**
 	 * 获取单表的第一条记录的某一字段
-	 * @param unknown $tablename
+	 * @param string $tablename
 	 * @param array $params
-	 * @param unknown $field
-	 * @return unknown|boolean
+	 * @param string $field
+	 * @return string|boolean
 	 */
 	public function getcolumn($tablename, $params = array(), $field) {
 		$result = $this->get($tablename, $params, array($field));
@@ -336,8 +336,8 @@ class IPdo{
 	
 	/**
 	 * 测试表中某字段是否存在索引
-	 * @param unknown $tablename
-	 * @param unknown $indexname
+	 * @param string $tablename
+	 * @param string $indexname
 	 * @return boolean
 	 */
 	public function indexexists($tablename, $indexname) {

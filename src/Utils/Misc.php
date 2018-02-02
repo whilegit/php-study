@@ -107,10 +107,12 @@ class Misc{
 		if (!self::is_serialized($value)) {
 			return $value;
 		}
-		$result = unserialize($value);
+		$result = @unserialize($value);
 		if ($result === false) {
 			//第一次解序列化失败，尝试将s:2:"abc";字样的长度修正后再次尝试
-			$temp = preg_replace('!s:(\d+):"(.*?)";!se', "'s:'.strlen('$2').':\"$2\";'", $value);
+		    $temp = preg_replace_callback('!s:(\d+):"(.*?)";!s', function($matches){
+		        return 's:'.strlen($matches[2]).":\"{$matches[2]}\";";
+		    }, $value);
 			return unserialize($temp);
 		}
 		return $result;

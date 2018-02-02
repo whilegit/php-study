@@ -20,9 +20,9 @@ class Model implements \ArrayAccess{
 	
 	/**
 	 * Model模型初始化函数，主要是设置 \Database\Basic\IPdo实例。此函数是全部模型存在的数据库基础，应第一时间以Model名义调用。
-	 * @param \Database\Basic\IPdo $iPdo
+	 * @param IPdo $iPdo
 	 */
-	public static final function model_init($iPdo){
+	public static final function model_init(IPdo $iPdo){
 		self::$iPdo = $iPdo;
 		spl_autoload_register('self::autoloader', true, false);
 	}
@@ -99,7 +99,7 @@ class Model implements \ArrayAccess{
 	
 	/**
 	 * 从数据库中获取一个对象(以子类的名义静态调用)
-	 * @param scale|array $pk 如为string或int, 则是主键条件；如为array，则是查询条件
+	 * @param string|int|array $pk 如为string或int, 则是主键条件；如为array，则是查询条件
 	 * @return Object|null
 	 */
 	public static function get($params){
@@ -117,7 +117,7 @@ class Model implements \ArrayAccess{
 	 * 罗列记录
 	 * @param array $params     条件
 	 * @param string $keyfield  数组的关键字
-	 * @return Array[subModel]
+	 * @return array 子类对象
 	 */
 	public static function ls($params = array(), $fields = array(), $keyfield = ''){
 		static::submodel_init();
@@ -161,17 +161,18 @@ class Model implements \ArrayAccess{
 	 * 保存或更新数据
 	 * @throws \Exception
 	 */
-	public function save(){
+	public function save($forceInsert = false){
 		$pk = static::$pk;
 		//无主键存在，则进行插入操作
-		if(empty($this->data[$pk])){
+		if(empty($this->data[$pk]) || $forceInsert == true){
+		    /*
 			//将无更新的元素剔除，不写进最终sql语句中
 			$data = array_filter($this->data, function($key){return in_array($key, $this->changeFields);}, ARRAY_FILTER_USE_KEY );
 			if(empty($data)){
 				//无实质性的数据插入，直接返回
 				return;
-			}
-			$flag = self::$iPdo->insert(static::$table, $data);
+			}*/
+			$flag = self::$iPdo->insert(static::$table, $this->data);
 			if($flag !== 1){
 				//插入失败
 				throw new \Exception("Insertion of a record of {$this->class} failed");
@@ -197,10 +198,18 @@ class Model implements \ArrayAccess{
 		$flag = self::$iPdo->update(static::$table, $data, array(static::$pk => $this->data[static::$pk]));
 		if($flag === false){
 			//更新失败
-			throw new \Exception("Insertion of a record of {$this->class} failed");
+			throw new \Exception("Update of a record of {$this->class} failed");
 		}
 		//清空变量更新列表
 		$this->changeFields = array();
+	}
+	
+	/**
+	 * 先更新若失败，则改成插入(启用 mysql的replace into语法)
+	 * @throws \Exception
+	 */
+	public function updateOrSave(){
+	    self::$iPdo->insert(static::$table, $this->data, true);
 	}
 	
 	/**
