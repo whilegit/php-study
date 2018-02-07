@@ -1,10 +1,9 @@
 <?php 
-namespace Whilegit\Tree\Gongpai;
+namespace Whilegit\Tree\GongpaiYTB;
 
 class GongpaiTree{
     
     /**
-     * 
      * 公排类型，二二公排时 $type为2， 三三公排时 $type为3
      * @desc <pre>
      *           用于找出新用户在公排中的位置(positionUser和findPosition函数)

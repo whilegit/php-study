@@ -1,5 +1,5 @@
 <?php
-namespace Whilegit\Tree\Gongpai;
+namespace Whilegit\Tree\GongpaiYTB;
 
 interface MiddleInterface{
     

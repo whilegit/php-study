@@ -75,7 +75,7 @@ class Model implements \ArrayAccess{
 		}
 		if(empty(static::$table) || empty(static::$fields) || empty(static::$pk)){
 			$class = str_replace('\\', '/', get_called_class());
-			static::$table = basename(strtolower($class));
+			if(empty(static::$table)) static::$table = basename(strtolower($class));
 			static::$fields = self::$iPdo->allfields(static::$table); 
 			if(empty(static::$fields)){
 				throw new \Exception('Fields empty. tablename=' . static::$table);
@@ -253,7 +253,12 @@ class Model implements \ArrayAccess{
 	public function setAttr($field, $value){
 		if(!empty($this->data[$field]) && $this->data[$field] === $value) return;
 		
-		$this->data[$field] = $value;
+		$funcName = 'set' . str_replace('_', '', $field);
+		if(method_exists($this, $funcName)){
+		    call_user_func(array($this, $funcName), $value);
+		} else {
+		    $this->data[$field] = $value;
+		}
 		//增加字段变更记录
 		if(key_exists($field, static::$fields) && !in_array($field, $this->changeFields)) {
 			$this->changeFields[] = $field;

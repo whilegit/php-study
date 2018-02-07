@@ -258,6 +258,7 @@ class IPdo{
 		$orderbysql = PdoUtils::order($orderby);
 		$limitsql = PdoUtils::limit($limit);
 		$sql = "SELECT {$select} FROM {$tablename} {$condition['fields']} {$orderbysql} {$limitsql}";
+		//MM(array($sql, $condition['params']));
 		return $this->fetchall($sql, $condition['params'], $keyfield);
 	}
 	

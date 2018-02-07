@@ -11,7 +11,7 @@ class PdoUtils{
 	 * @param array $allows 允许的操作符种类(其中+=和-=是新扩展的操作符，mysql中没有，需要特别处理)
 	 * @return array('field'=>'age', 'operator'=>'+=')
 	 */
-	protected static function operator($field, $def_value, $allows = array('>', '<', '<>', '!=', '>=', '<=', '+=', '-=', 'LIKE', 'like')){
+    protected static function operator($field, $def_value, $allows = array('>', '<', '<>', '!=', '>=', '<=', '+=', '-=', 'LIKE', 'like', 'FIND_IN_SET', 'find_in_set')){
 		$field = trim($field);
 		$operator = '';
 		if(strpos($field, ' ') !== false){
@@ -42,7 +42,6 @@ class PdoUtils{
 		$result = array('fields' => '', 'params' => array());
 		
 		$suffix = '';
-		$allow_operator = array('>', '<', '<>', '!=', '>=', '<=', '+=', '-=', 'LIKE', 'like');
 		if (in_array(strtolower($glue), array('and', 'or'))) {
 			$suffix = '__';
 		}
@@ -62,7 +61,9 @@ class PdoUtils{
 					$result['params'][$bind_name] = is_null($v) ? '' : $v;
 				}
 				$result['fields'] .= $split . "$field IN (" . implode(",", $insql) . ")";
-				
+			} else if(strtolower($operator) == 'find_in_set'){
+			    $result['fields'] .= $split . "{$operator}({$sf},`{$field}`)";
+			    $result['params'][$sf] = is_null($value) ? '' : $value;
 			} else {
 			    $result['fields'] .= $split . "`{$field}` {$operator} {$sf}";
 				$result['params'][$sf] = is_null($value) ? '' : $value;
