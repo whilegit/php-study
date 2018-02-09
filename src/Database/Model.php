@@ -119,10 +119,10 @@ class Model implements \ArrayAccess{
 	 * @param string $keyfield  数组的关键字
 	 * @return array 子类对象
 	 */
-	public static function ls($params = array(), $fields = array(), $keyfield = ''){
+	public static function ls($params = array(), $fields = array(), $keyfield = '', $order = ''){
 		static::submodel_init();
 		$params = PdoUtils::params($params, static::$pk);
-		$list = self::$iPdo->getall(static::$table, $params, $fields, $keyfield);
+		$list = self::$iPdo->getall(static::$table, $params, $fields, $keyfield, $order);
 		$ret = array();
 		foreach($list as $k=>&$v){
 			$ret[$k] = new static($v);

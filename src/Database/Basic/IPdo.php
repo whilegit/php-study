@@ -213,6 +213,7 @@ class IPdo{
 	public function fetchall($sql, $params = array(), $keyfield = '') {
 		$statement = $this->prepare($sql);
 		$result = $statement->execute($params);
+		
 		if (!$result) {
 			return false;
 		} else {
@@ -255,6 +256,7 @@ class IPdo{
 		$select = PdoUtils::fields($fields);
 		$condition = PdoUtils::implode($condition, 'AND');
 		$condition['fields'] = !empty($condition['fields']) ? " WHERE {$condition['fields']}" : '';
+
 		$orderbysql = PdoUtils::order($orderby);
 		$limitsql = PdoUtils::limit($limit);
 		$sql = "SELECT {$select} FROM {$tablename} {$condition['fields']} {$orderbysql} {$limitsql}";
