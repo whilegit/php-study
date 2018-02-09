@@ -14,13 +14,26 @@ class GongpaiModel extends Model{
     // 打散后关联数组，对应 $this->data['grandParents']      5:8,4:6,3:3,2:2,1:1
     protected $grandParentsAry;
 
-    protected $buildChildren = false;
-    protected $children = array('left'=>null, 'right'=>null);
-    protected $childrenLevelCountInfo = array();
-    protected $childrenLevelFirstItemInfo = array();
+    // 从自己向下发展的子树，调用一次 $this->buildChildrenTree() 后初始化以下各属性，并置位 $this->buildChildren
+    protected $buildChildren = false; 
+    protected $children = array('left'=>null, 'right'=>null);  //直接子结点
+    protected $childrenLevelCountInfo = array();               //子结点各层级的数量，键名是子结点的$level值
+    protected $childrenLevelFirstItemInfo = array();           //子结点各层级的第一个结点，仅用于判定最后一层是否已排满。
     
+    // 从自己往上的各层级父类，调用一次 $this->buildParentTree() 后初始化以下各属性，并置位 $this->buildParents
     protected $buildParents = false;
-    protected $parent;
+    protected $parent;   //直接上级结点
+    
+    /*
+     * 字段：
+     *       id : 编号
+     *  user_id : 会员ID
+     *    level : 公排等级
+     *  floor_sn: 层级排序(绝对定位)
+     * parentUserId : 父级user_id
+     * grandParents: 所有上级的组成的字符串，如 4:xxxx;3:xxxx;2:xxxx;1:xxxx;  适合sql查询
+     *
+     */
     
     /**
      * 构造函数
@@ -34,7 +47,7 @@ class GongpaiModel extends Model{
     /**
      * 在自己的树中，加入一个结点，并选择合适的位置插入(从上到下，从左到右)
      * @param int $user_id
-     * @return \Whilegit\Tree\NormalGongpai\GongpaiModel
+     * @return GongpaiModel 返回当前新插入的结点
      */
     public function addSub($user_id){
         $tmp = self::get(array('user_id' => $user_id));
@@ -68,7 +81,7 @@ class GongpaiModel extends Model{
     /**
      * 寻找当前公排树(自己作为树根)的空缺位置
      * @desc <br> 依赖于子结点树的建立 见 function buildChildrenTree()
-     * @return \Whilegit\Tree\NormalGongpai\GongpaiModel
+     * @return GongpaiModel
      */
     private function findPosition(){
         $ret = null;
@@ -136,7 +149,7 @@ class GongpaiModel extends Model{
                 else $this->childrenLevelCountInfo[$level] ++;
                 //获取每层的第一个结点
                 if(empty($this->childrenLevelFirstItemInfo[$level])) $this->childrenLevelFirstItemInfo[$level] = $child;
-                
+
                 $parent = ($pid == $this->data['user_id']) ? $this : $children[$pid];
                 if(empty($parent)){
                     die("[{$cid}]的父级为[{$pid}]，但是[$pid]不存在于树中。插入点为[{$this->data['user_id']}]");
@@ -154,7 +167,7 @@ class GongpaiModel extends Model{
     /**
      * 递归插找空缺位置
      * @param int $destLevel 目录层级
-     * @return NULL|\Whilegit\Tree\NormalGongpai\GongpaiModel
+     * @return NULL|GongpaiModel
      */
     private function findPositionRecur($destLevel){
         $ret = null;
@@ -178,8 +191,6 @@ class GongpaiModel extends Model{
         }
         return $ret;
     }
-    
-    
     
     /**
      * 查找本对象的所有上级，并建立父树
@@ -237,6 +248,7 @@ class GongpaiModel extends Model{
         }
     }
     
+    
     /**
      * 将形如 1:11;2:31; 的字符串转化成 array('1'=>11,'2'=>31) 类型的数组
      */
@@ -254,13 +266,14 @@ class GongpaiModel extends Model{
         }
     }
     
+    
     /**
      * 输出公排图
      * @param GongpaiModel|int|null $entry object|user_id|null  如输入null则查找根结点
      * @return string
      */
     public static function plot($entry = null){
-        if(!$entry instanceof GongpaiModel){
+        if(!$entry instanceof self){
             if(empty($entry)) $entry = self::get(array('level'=>1, 'parentUserId'=>-1));
             else $entry = self::get(array('user_id'=>intval($entry)));
         }
@@ -270,6 +283,7 @@ class GongpaiModel extends Model{
         $str .= "<div>".$entry->plot_cur(1) . "</div>";
         return $str;
     }
+    
     
     /**
      * 输出公排图的递归
@@ -306,14 +320,4 @@ class GongpaiModel extends Model{
         return $str;
     }
     
-    /*
-     * 字段：
-     *       id : 编号 
-     *  user_id : 会员ID
-     *    level : 公排等级
-     *  floor_sn: 层级排序(绝对定位)
-     * parentUserId : 父级user_id
-     * grandParents: 所有上级的组成的字符串，如 4:xxxx;3:xxxx;2:xxxx;1:xxxx;  适合sql查询
-     *
-     */
 }
