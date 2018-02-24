@@ -25,6 +25,9 @@ class IPdo{
 	protected $pdo_name = "";            //连接的别名
 	protected $table_callback;           //表名回调(用于一些带前缀的情形)
 	
+	protected $sql_debug = false;
+	
+	
 	/**
 	 * 获取实例化了的本类对象
 	 * @param string $name   连接的别名
@@ -177,6 +180,7 @@ class IPdo{
 	 * @return boolean|string 失败返回false，成功返回该列的内容
 	 */
 	public function fetchcolumn($sql, $params = array(), $column = 0) {
+	    if($this->sql_debug == true) \WhileGit\Utils\Trace::out(array($sql, $params));
 		$statement = $this->prepare($sql);
 		$result = $statement->execute($params);
 		if (!$result) {
@@ -193,6 +197,7 @@ class IPdo{
 	 * @return boolean|array  失败返回false, 成功返回第一条记录
 	 */
 	public function fetch($sql, $params = array()) {
+	    if($this->sql_debug == true) \WhileGit\Utils\Trace::out(array($sql, $params));
 		$statement = $this->prepare($sql);
 		$result = $statement->execute($params);
 		if (!$result) {
@@ -211,6 +216,7 @@ class IPdo{
 	 * @return boolean|array    失败返回false, 成功返回所有记录
 	 */
 	public function fetchall($sql, $params = array(), $keyfield = '') {
+	    if($this->sql_debug == true) \WhileGit\Utils\Trace::out(array($sql, $params));
 		$statement = $this->prepare($sql);
 		$result = $statement->execute($params);
 		
@@ -260,7 +266,6 @@ class IPdo{
 		$orderbysql = PdoUtils::order($orderby);
 		$limitsql = PdoUtils::limit($limit);
 		$sql = "SELECT {$select} FROM {$tablename} {$condition['fields']} {$orderbysql} {$limitsql}";
-		//MM(array($sql, $condition['params']));
 		return $this->fetchall($sql, $condition['params'], $keyfield);
 	}
 	
@@ -268,7 +273,6 @@ class IPdo{
 		$condition = PdoUtils::implode($condition, 'AND');
 		$condition['fields'] = !empty($condition['fields']) ? " WHERE {$condition['fields']}" : '';
 		$sql = "SELECT count(*)  FROM {$tablename} {$condition['fields']}";
-		//\WhileGit\Utils\Trace::out($sql);
 		return $this->fetchcolumn($sql, $condition['params']);
 	}
 	
@@ -396,5 +400,10 @@ class IPdo{
 		//$fields = array_keys($fields);
 		$fields_map[$tablename] = $fields;
 		return $fields;
+	}
+	
+	public function setSqlDebug($flag = true){
+	    $this->sql_debug = $flag;
+	    return $this;
 	}
 }

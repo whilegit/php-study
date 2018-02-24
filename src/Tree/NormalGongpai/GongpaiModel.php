@@ -78,6 +78,7 @@ class GongpaiModel extends Model{
         return $child;
     }
     
+
     /**
      * 寻找当前公排树(自己作为树根)的空缺位置
      * @desc <br> 依赖于子结点树的建立 见 function buildChildrenTree()
@@ -230,6 +231,129 @@ class GongpaiModel extends Model{
         }
     }
 
+    /**
+     * 探测增加自己后，哪些父级获得层奖(按位置发放层奖)
+     * @desc <br> 每个新会员的加入，只会发出一个层奖（某一层的左区和右区都有会员入驻时发出）；为什么？!
+     * @return false|GongpaiModel|NULL   返回GongpaiModel类型表示该会员获得层奖，返回null表示无人获得层奖
+     */
+    public function detectFloorAward(){
+        if($this->buildParents == false) $this->buildParentTree();
+        //没有父级，出错返回
+        if($this->parent == null){
+            return false;
+        }
+        $parent = $this->parent;
+        $curLevel = $this->data['level'];
+        $curFloorSn = $this->data['floor_sn'];
+
+        while($parent != null){
+            $parentLevel = $parent->data['level'];
+            $parentSn = $parent->data['floor_sn'];
+            //计算几个floor_sn的边界
+            $num = pow(2, $curLevel - $parentLevel);
+            $leftStartSn = $parentSn * $num;
+            $leftEndSn = $leftStartSn + $num / 2 - 1;
+            $rightStartSn = $leftEndSn + 1;
+            $rightEndSn = $rightStartSn + $num /2 - 1;
+            
+            //左区数量
+            $condition = array();
+            $condition['level'] = $curLevel;
+            $condition['floor_sn >='] = $leftStartSn;
+            $condition['floor_sn <='] = $leftEndSn;
+            $leftCounts = self::$iPdo->getcount(self::$table, $condition);
+            
+            //右区数量
+            $condition = array();
+            $condition['level'] = $curLevel;
+            $condition['floor_sn >='] = $rightStartSn;
+            $condition['floor_sn <='] = $rightEndSn;
+            
+            $rightCounts = self::$iPdo->setSqlDebug(false)->getcount(self::$table, $condition);            
+            
+            //自己处在左区，且左区只有自己
+            $flagLeft = ($curFloorSn <= $leftEndSn && $leftCounts == 1);
+            //自己处在右区，且右区只有自己
+            $flagRight = ($curFloorSn >= $rightStartSn && $rightCounts == 1);
+            
+            //自己所在的区只有自己一个人，才需要考虑层奖。自己的直接上级肯定符合条件，必须进行考察
+            if( $flagLeft || $flagRight ) {  
+                $oppoCounts = $flagLeft ? $rightCounts : $leftCounts;
+
+                if($oppoCounts >= 1){
+                    //这个父级获得层奖，继续往上推没有必要了，肯定不可能再符合层奖要求了
+                    return $parent;
+                } else {
+                    $parent = $parent->parent;
+                    if(empty($parent)){
+                        return null;
+                    }
+                    continue;
+                }
+            } else {
+                break;
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * 探测增加自己后，哪些父级获得对碰奖(按位置对碰)
+     */
+    public function detectPairAward(){
+        $curLevel = $this->data['level'];
+        $curFloorSn = $this->data['floor_sn'];
+        $pairParents = array();
+        // 计算所有可能会对碰的楼层序号
+        $siblings = array();
+        for($i = 0; $i < $curLevel - 1; $i++){
+            $roads = array();
+            $curSn = $curFloorSn;
+            //从当前结点往上走，并记录向上运动的轨迹; 直接父级向上走一次，直接父级的直接父级向上走两次
+            for($j = 0; $j<$i+1; $j++){
+                //$lr 0表示左上  1右上, 走的路径记下来push到$roads里面
+                $lr = $curSn % 2;
+                array_push($roads, $lr);
+                //上一级的层级序号 = 下级的floor_sn 整除 2
+                $curSn = intval($curSn / 2);
+            }
+            //到达目录父级后，然后跟据之前的轨迹又往下走
+            for($j = 0; $j<$i+1; $j++){
+                $lr = array_pop($roads);
+                $curSn *= 2;
+                //第一步往下走时，选择另一条路；其他原路返回
+                if($j == 0){
+                    $curSn += 1 - $lr;
+                } else {
+                    $curSn += $lr;
+                }
+            }
+            $siblings[] = $curSn;
+        }
+        //搜索可能对碰的楼层序号
+        $sibs = self::ls(array('floor_sn IN' => $siblings, 'level'=>$curLevel), null, 'floor_sn');
+        
+        if(!empty($sibs)){
+            //未建立父系的，立即建立
+            if($this->buildParents == false) $this->buildParentTree();
+            foreach($sibs as $floor_sn=>$item){
+                $diff = abs($floor_sn - $curFloorSn);
+                // $diff == 1时，表示同一直接上级；$diff == 2时，表示同一祖父；$diff == 4时，表示同一祖祖父；
+                // $diff == 8时，表示同一祖祖祖父；依次类推...
+                $diff = round(log($diff, 2)) + 1;
+                $award = $this;
+                
+                for($i = 0; $i<$diff; $i++){
+                    $award = $award->parent;
+                }
+                $uid = $award['user_id'];
+                $pairParents[$uid] = $award;
+            }
+        }
+        return $pairParents;
+    }
+    
+    
     /**
      * 当调用$this->setAttr('grandParents', xxxx)时自动回调本函数
      * @param string|array $value 如1:11;2:31;或array('1'=>11, '2'=>31)

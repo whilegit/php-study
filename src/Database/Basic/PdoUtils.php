@@ -33,7 +33,7 @@ class PdoUtils{
 	/**
 	 * 拼接sql的where子句, update的Set子句
 	 * @param array $params  <pre>
-	 * array("id"=>'1', 'name like'=>'James', 'age >=' => '30', 'user_id'=>array(1,2,3), 'parentids FIELD_IN_SET'=>'xxxx', ...)
+	 * array("id"=>'1', 'name like'=>'James', 'age >=' => '30', 'user_id'=>array(1,2,3), 'parentids FIND_IN_SET'=>'xxxx', ...)
 	 *        </pre>
 	 * @param string $glue 各子句的连接符，可以为, 逗号(适合update的set子句)，And/Or(适合Where子句)
 	 * @return array('fields'=>'xxx And xxx', 'params'=>array(...))
@@ -47,12 +47,21 @@ class PdoUtils{
 		}
 
 		$split = '';
+		$sfControlAry = array();
 		foreach ($params as $field => $value) {
 			$tmp = self::operator($field, $value);
 			$field = $tmp['field'];
 			$operator = $tmp['operator'];
 			
+			//控制pdo中参数的符号，允许一个sql的条件语句中同一个字段出现多次
 			$sf = ":{$suffix}{$field}";
+			if(empty($sfControlAry[$sf])){
+			    $sfControlAry[$sf] = 1;
+			} else {
+			    $sfControlAry[$sf] ++;
+			}
+			$sf .= '_' . $sfControlAry[$sf];
+			
 			if ($operator == 'IN') {
 				$insql = array();
 				foreach ($value as $k => $v) {

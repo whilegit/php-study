@@ -20,17 +20,25 @@ IPdo::instance('master', $db_config);
 IPdo::instance()->table(function($table){return "ims_{$table}";});
 Model::model_init(IPdo::instance());
 
-
-//echo GongpaiModel::plot($gpitem); die;
-
+$floorAwards = array();
 /*
-for($i = 0; $i<1000; $i++){
-    $parent_id = mt_rand(1, $i+1);
+for($i = 2; $i<100; $i++){
+    
+    $parent_id = mt_rand(1, $i-1);
     $gpitem = GongpaiModel::get(array('user_id'=>$parent_id));
-    $new_user_id = $i+2;
-    $gpitem->addSub($new_user_id);
+    $new_user_id = $i;
+    $entry = $gpitem->addSub($new_user_id);
+
+    $floorAwardEntry = $entry->detectFloorAward();
+    if($floorAwardEntry instanceof GongpaiModel) {
+        $floorAwards[] = "<div>增加会员[{$entry['user_id']}]时，父级[{$floorAwardEntry['user_id']}]获得层奖</div>";
+    }
 }
 */
+
+//echo GongpaiModel::plot($gpitem); die;
+$entry = GongpaiModel::get(array('user_id'=>35));
+$siblings = $entry->detectPairAward();
 
 /*
 $gpitem = GongpaiModel::get(array('user_id'=>1));
@@ -48,15 +56,27 @@ $gpitem->addSub($new_user_id);
 	</style>
 </head>
 <body>
+<div>
+ <pre><?php var_dump(array_keys($siblings));?></pre>
+    <?php 
+    echo GongpaiModel::plot(); 
+    
+    //$parents = GongpaiModel::ls(array('user_id'=> array(1,2,3)), null, 'user_id');
+    //MM($parents);
+    
+    //$gpitem = GongpaiModel::get(array('user_id'=>300));
+    //$gpitem->buildParentTree();
+    ?>
+   
+</div>
+<div>
 <?php 
-echo GongpaiModel::plot(); 
-
-//$parents = GongpaiModel::ls(array('user_id'=> array(1,2,3)), null, 'user_id');
-//MM($parents);
-
-//$gpitem = GongpaiModel::get(array('user_id'=>300));
-//$gpitem->buildParentTree();
+echo '<div>获得层奖次数：'.count($floorAwards) . '</div>';
+for($i = 0; $i<count($floorAwards); $i++) {
+    echo $floorAwards[$i];
+}
 ?>
+</div>
 </body>
 <script>
 $(".key").click(function(){
