@@ -22,7 +22,7 @@ Model::model_init(IPdo::instance());
 
 $cache = new FileCache(__DIR__ . '/TEMP/Cache');
 
-/*
+
 $cache = new MysqlCache(
     function($k){
         $record = While_Core_Cache::get($k);
@@ -36,14 +36,23 @@ $cache = new MysqlCache(
         $record->setAttr('content', $v);
         $record->setAttr('timeout', $t);
         $record->updateOrSave();
+    },
+    function($k){
+        $record = While_Core_Cache::get($k);
+        if(!empty($record)){
+            $record->delete();
+        }
     }
 );
-*/
+
 $key = 'uniacid:11';
 $value = array('a','b','c');
 $timeout = 1;
 $cache->setCache($key, $value, $timeout);
 $a9 = $cache->getCache($key);
+
+//删除缓存
+$cache->delCache($key);
 
 $key = 'uniacid:9';
 $value = array(3,2,1);

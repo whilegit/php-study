@@ -353,7 +353,6 @@ class GongpaiModel extends Model{
         return $pairParents;
     }
     
-    
     /**
      * 当调用$this->setAttr('grandParents', xxxx)时自动回调本函数
      * @param string|array $value 如1:11;2:31;或array('1'=>11, '2'=>31)
@@ -372,7 +371,6 @@ class GongpaiModel extends Model{
         }
     }
     
-    
     /**
      * 将形如 1:11;2:31; 的字符串转化成 array('1'=>11,'2'=>31) 类型的数组
      */
@@ -389,7 +387,6 @@ class GongpaiModel extends Model{
             }
         }
     }
-    
     
     /**
      * 输出公排图

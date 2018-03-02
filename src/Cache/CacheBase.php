@@ -16,4 +16,10 @@ abstract class CacheBase{
      * @param string $key 键值
      */
     public abstract function getCache($key);
+    
+    /**
+     * 删除缓存
+     * @param string $key
+     */
+    public abstract function delCache($key);
 }

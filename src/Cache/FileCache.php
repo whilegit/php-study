@@ -58,4 +58,18 @@ class FileCache extends CacheBase{
         $main = substr($content, $pos+1);
         return \Whilegit\Utils\Misc::iunserializer($main);
     }
+    
+    /**
+     * 删除缓存
+     * {@inheritDoc}
+     * @see \Whilegit\Cache\CacheBase::delCache()
+     */
+    public function delCache($key){
+        $key = strtoupper(md5($key));
+        $p = '';
+        for($i = 0; $i<$this->dirLevel; $i++) $p .= '/'.$key{$i};
+        $file = "{$this->rootCache}{$p}/{$key}.php";
+        if(file_exists($file)) @unlink($file);
+    }
+
 }

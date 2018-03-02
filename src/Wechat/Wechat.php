@@ -13,12 +13,12 @@ class Wechat{
     
     /**
       * 缓存层回调。用于获取缓存了的access_token
-      * @var callback 原型 function($appId){} 返回 null 或者  array('token'=>'xxxxxxx', 'expire'=>'xxxxxxx');
+      * @var Callable 原型 function($appId){} 返回 null 或者  array('token'=>'xxxxxxx', 'expire'=>'xxxxxxx');
       */
     protected $getCacheAccessTokenFunc;
     /**
      * 缓存层回调。用于缓存access_token
-     * @var 原型 function($appId, $record){}  $record = array('token'=>'xxxxx', 'expire'=>'xxxxx')
+     * @var Callable function($appId, $record){}  $record = array('token'=>'xxxxx', 'expire'=>'xxxxx')
      */
     protected $setCacheAccessTokenFunc;
     

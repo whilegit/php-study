@@ -5,9 +5,9 @@ require_once __DIR__ . '/inc.php';
 
 $cache = new FileCache(__DIR__ . '/TEMP/Cache');
 
-$key = 'uniacid:9';
+$key = 'uniacid:1';
 $value = array(1,2,3);
 $timeout = 0;
-$cache->setCache($key, $value, $timeout);
-
-MM($cache->getCache($key));
+//$cache->setCache($key, $value, $timeout);
+$cache->delCache($key);
+//MM($cache->getCache($key));

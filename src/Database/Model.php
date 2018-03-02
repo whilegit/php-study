@@ -218,7 +218,7 @@ class Model implements \ArrayAccess{
 	 */
 	public function delete(){
 		//如无主键字段存在，则直接返回，无法删除。
-		if(empty($this->data[$pk])) {
+		if(empty($this->data[static::$pk])) {
 			throw new \Exception("Deletion of a record of {$this->class} failed: no pk condition!");
 			return;
 		}
