@@ -1,6 +1,7 @@
 <?php
 namespace Whilegit\Controller;
 
+
 class ControllerDistribution{
     
     //处理句柄，以$GPC的h参数为处理句柄的名称，默认定义了一个 module/controller的默认处理句柄。
@@ -15,27 +16,30 @@ class ControllerDistribution{
     
     protected function default_handler(){
         global $_GPC;
-        $module = isset($_GPC['m']) ? $_GPC['m'] : 'Index';
-        $controller = isset($_GPC['c']) ? $_GPC['c'] : 'Index';
-        $action = isset($_GPC['a']) ? $_GPC['a'] : 'Index';
+        define ('WG_MODULE',  isset($_GPC['m']) ? $_GPC['m'] : 'Index');
+        define ('WG_CONTROLLER', isset($_GPC['c']) ? $_GPC['c'] : 'Index');
+        define ('WG_ACTION', isset($_GPC['a']) ? $_GPC['a'] : 'Index'); 
        
+        //找到控制器
         if(!defined('WG_DEFAULT_CONTROLLER_DIR')){
             die("Have not defined 'WG_DEFAULT_CONTROLLER_DIR'");
         }
-        $path = WG_DEFAULT_CONTROLLER_DIR . '/' . $module . '/' . $controller . 'Controller.php';
+        $path = WG_DEFAULT_CONTROLLER_DIR . '/' . WG_MODULE . '/' . WG_CONTROLLER . 'Controller.php';
         if(!file_exists($path)){
             die("'{$path}' doesnot exists.");
         }
         require_once($path);
-        $cls = "\\Controller\\{$module}\\{$controller}Controller";
+
+        $cls = "\\Controller\\" . WG_MODULE . "\\" . WG_CONTROLLER . "Controller";
         if(!class_exists($cls)){
             die("'{$cls}' not find. PATH={$path}");
         }
-        $obj = new $cls;
-        $action = 'action'.$action;
+        $obj = new $cls();
+        $action = 'action'.WG_ACTION;
         if(!method_exists($obj, $action)){
             die("'{$cls}' method not exists. Method='{$action}'");
         }
+        
         call_user_func(array($obj, $action));
     }
     

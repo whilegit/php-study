@@ -2,6 +2,24 @@
 namespace Whilegit\Utils;
 
 class File{
+    
+    /**
+     * 读取目录里的所有文件
+     * @param string $dir
+     * @return string[]
+     */
+    public static function read_files($dir){
+        $ret = array();
+        if(is_dir($dir)){
+            $dir = opendir($dir);
+            while($entry = readdir($dir)){
+                if($entry == '.' || $entry == '..') continue;
+                $ret[] = $entry;
+            }
+        }
+        return $ret;
+    }
+    
 	/**
 	 * 获取所有的文件上传列表
 	 * @return string|array[][] 其中field表示表单域   name终端文件名   tmp_name服务器路径  error错误代号  size文件大小  type文件类型(如image/jpeg)

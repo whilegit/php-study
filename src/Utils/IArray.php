@@ -76,29 +76,6 @@ class IArray{
 		}
 		return $rs;
 	}
-
-
-	
-	public static function createLinkString($para, $sort, $encode) {
-		
-		if($para == NULL || !is_array($para))
-			return "";
-	
-			$linkString = "";
-			if ($sort) {
-				$para = argSort ( $para );
-			}
-			while ( list ( $key, $value ) = each ( $para ) ) {
-				if ($encode) {
-					$value = urlencode ( $value );
-				}
-				$linkString .= $key . "=" . $value . "&";
-			}
-			// 去掉最后一个&字符
-			$linkString = substr ( $linkString, 0, count ( $linkString ) - 2 );
-	
-			return $linkString;
-	}
 	
 	/**
 	 * 将key1=val1&key2=val2...样式的字符串解析成数组，使用了内置函数parse_str()，主要是为解决base64编码中加号(+)的问题。<br>
@@ -124,6 +101,13 @@ class IArray{
 			}
 		}
 		return $result;
+	}
+	
+	public static function encode_url($params){
+	    $ret = '';
+	    foreach($params as $k=>$v){
+	        $ret .= "{$k}={$v}&";
+	    }
 	}
 
 	/**

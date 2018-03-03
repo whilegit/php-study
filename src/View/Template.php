@@ -1,6 +1,7 @@
 <?php
 namespace Whilegit\View;
 
+use Whilegit\Utils\File;
 use Whilegit\Utils\Reflect;
 
 class Template{
@@ -44,6 +45,7 @@ class Template{
         'remote_type' => 0,   // 0关闭  1开启
         'attachurl_local' => 'http://localhost',
         'attachurl_remote' => 'http://www.exexpert.cn',
+        'template_special_dir' => '',
         //编译模板文件的目录
         'compile_path' => null,
         //模板文件的目录
@@ -71,9 +73,19 @@ class Template{
      */
     public static function init($config = array(), $pathCallback = null){
         self::$config = array_merge(self::$config, $config);
+
         if(empty(self::$config['compile_path']) || empty(self::$config['template_path'])){
-            die('模板路径未指定');
+            die('Must specify compile_path and template_path');
         }
+        
+        if(!empty(self::$config['template_special_dir'])){
+            $files = File::read_files(self::$config['template_special_dir']);
+            foreach($files as $f){
+                require_once self::$config['template_special_dir'] . '/' . $f;
+            }
+        }
+        
+        defined('WG_ACCESS_TEMPLATE') or define('WG_ACCESS_TEMPLATE', true);
         self::$pathCallback = $pathCallback;
     }
     
@@ -97,6 +109,8 @@ class Template{
                 $compile = call_user_func(self::$pathCallback, $template, 3);
             }
         }
+        
+        
         if(empty($source) || empty($compile) || !is_file($source)){
             if($include_flag == false){
                 $source = self::$config['template_path'] . '/' . $template . '.html';
@@ -106,6 +120,8 @@ class Template{
                 $compile = self::$config['include_compile_path'] . '/' . $template . '.php';
             }
         }
+        $source = str_replace("\\", '/', $source);
+        $compile = str_replace("\\", '/', $compile);
         if(!file_exists($source)){
             die('template file not exists - ' . $source);
         }
@@ -113,6 +129,12 @@ class Template{
             self::compile($source, $compile);
         }
         return $compile;
+    }
+    
+    public static function renderJson($ary){
+        $str = json_encode($ary);
+        header('Content-type: application/json');
+        echo $str;
     }
     
     /**
@@ -219,7 +241,7 @@ class Template{
                  </body>", 
             $str);
         }
-        $str = "<?php defined('IN_IA') or exit('Access Denied');?>" . $str;
+        $str = "<?php defined('WG_ACCESS_TEMPLATE') or exit('Access Denied');?>" . $str;
         return $str;
     }
     
