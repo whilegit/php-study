@@ -94,7 +94,7 @@ class Wechat{
      * @param string  $type    获取用户信息的类型(base表示只获取openid, userinfo获取基本信息)
      * @param string  $state   透明传输字段     
      * @return void|string|Array    正确时返回string或array, 失败时返回null
-     * @desc   <br>将本函数 置于程序流中就可以了。
+     * @desc   <br>将本函数 置于程序流中就可以了，微信将重定向至当前正在访问的页面。
      */
     public function oauth($type = 'base', $state = 'UNNAMED'){
         if(empty($_GET['code']) || $_GET['state'] != $state){
